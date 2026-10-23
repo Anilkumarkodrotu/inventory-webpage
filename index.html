@@ -3,8 +3,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wah! Chaat - Daily Purchase Register</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wah! Chaat | Purchase Register</title>
 
 <style>
 :root {
@@ -12,9 +12,8 @@
   --yellow-light: #fff8d9;
   --black: #171717;
   --grey: #666;
-  --border: #e6e6e6;
+  --border: #e5e5e5;
   --background: #f7f7f5;
-  --white: #fff;
   --red: #c62828;
 }
 
@@ -23,24 +22,24 @@
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: var(--background);
   color: var(--black);
+  background: var(--background);
   font-size: 14px;
 }
 
 header {
-  background: white;
+  background: #fff;
   border-bottom: 4px solid var(--yellow);
   padding: 18px 24px;
 }
 
 .header-inner {
-  max-width: 1450px;
+  max-width: 1600px;
   margin: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 15px;
+  gap: 12px;
 }
 
 .brand {
@@ -64,34 +63,35 @@ header {
   background: var(--yellow-light);
   border: 1px solid #f0df8b;
   border-radius: 20px;
-  padding: 9px 14px;
+  padding: 9px 13px;
   font-weight: bold;
 }
 
 main {
-  max-width: 1450px;
-  margin: 24px auto;
+  max-width: 1600px;
+  margin: 22px auto;
   padding: 0 18px 35px;
 }
 
+/* Desktop layout: Entry Sheet 60%, Cart 40% */
 .workspace {
   display: grid;
-  grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.6fr);
-  gap: 20px;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 18px;
   align-items: start;
 }
 
 .panel {
-  background: white;
+  background: #fff;
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 21px;
-  box-shadow: 0 3px 12px rgba(0,0,0,.025);
+  padding: 20px;
   min-width: 0;
+  box-shadow: 0 3px 12px rgba(0,0,0,.025);
 }
 
 .panel-heading {
-  margin-bottom: 19px;
+  margin-bottom: 20px;
 }
 
 .panel-heading h2 {
@@ -105,21 +105,23 @@ main {
   margin: 7px 0 0;
 }
 
+.entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+
 .field {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  margin-bottom: 16px;
+  margin-bottom: 17px;
+  min-width: 0;
 }
 
 label {
-  font-weight: bold;
   font-size: 13px;
-}
-
-.optional {
-  color: var(--grey);
-  font-weight: normal;
+  font-weight: 700;
 }
 
 input, select {
@@ -128,29 +130,29 @@ input, select {
   padding: 11px;
   border: 1px solid #d8d8d8;
   border-radius: 7px;
-  font-size: 14px;
-  background: white;
+  background: #fff;
   color: var(--black);
+  font-size: 14px;
 }
 
 input:focus, select:focus {
   outline: none;
-  border-color: #c7a000;
+  border-color: #c5a000;
   box-shadow: 0 0 0 3px rgba(255,212,41,.2);
 }
 
 .help-text {
-  color: var(--grey);
   font-size: 12px;
   line-height: 1.4;
+  color: var(--grey);
 }
 
 button {
-  border: none;
+  border: 0;
   border-radius: 7px;
-  padding: 11px 14px;
+  padding: 11px 13px;
   font-size: 13px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -163,7 +165,7 @@ button:hover { opacity: .86; }
 
 .dark {
   background: var(--black);
-  color: white;
+  color: #fff;
 }
 
 .secondary {
@@ -178,48 +180,51 @@ button:hover { opacity: .86; }
   padding: 7px 9px;
 }
 
-.full-width { width: 100%; }
-
 .button-row {
   display: flex;
   gap: 9px;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: 4px;
 }
 
-.cart-top {
+.button-row button { flex: 1; }
+
+.cart-heading {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
-.cart-top h2 {
-  margin: 0;
+.cart-heading h2 {
   font-size: 19px;
+  margin: 0;
 }
 
-.cart-top p {
-  margin: 7px 0 0;
+.cart-heading p {
   color: var(--grey);
   line-height: 1.5;
+  margin: 7px 0 0;
 }
 
 .table-wrap {
-  overflow-x: auto;
   width: 100%;
+  overflow-x: auto;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 590px;
+}
+
+.cart-table {
+  min-width: 460px;
 }
 
 th, td {
-  padding: 12px 9px;
+  padding: 11px 8px;
   border-bottom: 1px solid #ededed;
   text-align: left;
   vertical-align: middle;
@@ -232,44 +237,34 @@ th {
   white-space: nowrap;
 }
 
-td { font-size: 13px; }
+td { font-size: 12px; }
 
 .right {
   text-align: right;
   white-space: nowrap;
 }
 
-.item-name { font-weight: bold; }
+.item-name { font-weight: 700; }
 
 .empty {
   text-align: center;
-  padding: 35px 12px;
   color: var(--grey);
+  padding: 28px 10px;
   line-height: 1.6;
 }
 
-.cart-summary {
-  display: flex;
-  align-items: stretch;
-  justify-content: space-between;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-top: 18px;
-}
-
 .summary-box {
-  background: var(--yellow-light);
-  border: 1px solid #f0df8b;
+  margin-top: 17px;
+  padding: 14px;
   border-radius: 9px;
-  padding: 14px 17px;
-  min-width: 220px;
-  flex: 1;
+  border: 1px solid #f0df8b;
+  background: var(--yellow-light);
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
   padding: 5px 0;
 }
 
@@ -282,17 +277,17 @@ td { font-size: 13px; }
 }
 
 .cart-actions {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 9px;
-  min-width: 145px;
+  margin-top: 14px;
 }
 
 .notice {
   display: none;
   padding: 12px 14px;
   border-radius: 7px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   line-height: 1.5;
 }
 
@@ -315,8 +310,8 @@ td { font-size: 13px; }
 .saved-toolbar {
   display: flex;
   align-items: center;
-  gap: 10px;
   flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 17px;
 }
 
@@ -325,7 +320,7 @@ td { font-size: 13px; }
   min-width: 160px;
 }
 
-.saved-toolbar label { white-space: nowrap; }
+.saved-table { min-width: 540px; }
 
 .footer {
   text-align: center;
@@ -335,29 +330,24 @@ td { font-size: 13px; }
   margin-top: 24px;
 }
 
-@media (max-width: 950px) {
+@media (max-width: 850px) {
   .workspace {
-    grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
-    gap: 12px;
+    grid-template-columns: 1fr;
   }
 
-  .panel { padding: 15px; }
+  .cart-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
-@media (max-width: 720px) {
-  .workspace { grid-template-columns: 1fr; }
-  .panel { padding: 18px; }
-  main { padding: 0 10px 25px; margin-top: 15px; }
+@media (max-width: 520px) {
+  main { padding: 0 10px 25px; margin-top: 14px; }
   header { padding: 16px; }
   .brand { font-size: 24px; }
-  .cart-actions { flex-direction: row; flex-wrap: wrap; }
-  .cart-actions button { flex: 1; }
-}
-
-@media (max-width: 450px) {
-  .header-inner { align-items: flex-start; }
-  .header-tag { font-size: 11px; }
+  .panel { padding: 15px; }
+  .entry-grid { grid-template-columns: 1fr; }
   .saved-toolbar select { width: 100%; }
+  .cart-actions { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -379,85 +369,67 @@ td { font-size: 13px; }
 
   <div class="workspace">
 
-    <!-- LEFT SIDE: ENTRY SHEET -->
+    <!-- ENTRY SHEET: 60% -->
     <section class="panel">
       <div class="panel-heading">
         <h2>Entry Sheet</h2>
-        <p>Enter the purchased item details and add them to your cart.</p>
+        <p>Enter the purchased item details below.</p>
       </div>
 
       <form id="purchaseForm">
+        <div class="entry-grid">
 
-        <div class="field">
-          <label for="purchaseDate">Purchase Date *</label>
-          <input type="date" id="purchaseDate" required>
-          <div class="help-text">Stored internally for purchase records.</div>
-        </div>
-
-        <div class="field">
-          <label for="itemName">Item Name *</label>
-          <select id="itemName" required>
-            <option value="">Select item</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="subitem">
-            Subitem <span class="optional">(Optional)</span>
-          </label>
-          <input id="subitem" type="text" maxlength="50"
-                 placeholder="e.g. brand or supplier">
-          <div class="help-text">
-            Internal use only. It will not appear in the cart output.
+          <div class="field">
+            <label for="itemName">Item Name *</label>
+            <select id="itemName" required>
+              <option value="">Select item</option>
+            </select>
           </div>
-        </div>
 
-        <div class="field">
-          <label for="quantity">Quantity *</label>
-          <input id="quantity" type="number" min="0.001"
-                 step="any" placeholder="Enter quantity" required>
-        </div>
-
-        <div class="field">
-          <label for="units">Unit *</label>
-          <select id="units" required>
-            <option value="Bottles">Bottles</option>
-            <option value="Boxes">Boxes</option>
-            <option value="Grams">Grams</option>
-            <option value="Kg">Kg</option>
-            <option value="Liters">Liters</option>
-            <option value="Milliliters">Milliliters</option>
-            <option value="Packs">Packs</option>
-            <option value="Pcs">Pcs</option>
-          </select>
-          <div class="help-text" id="unitNote">
-            Select an item to load its default unit.
+          <div class="field">
+            <label for="quantity">Quantity *</label>
+            <input id="quantity" type="number" min="0.001"
+                   step="any" placeholder="Enter quantity" required>
           </div>
-        </div>
 
-        <div class="field">
-          <label for="price">Price per Unit (₹) *</label>
-          <input id="price" type="number" min="0" step="0.01"
-                 placeholder="Enter unit price" required>
+          <div class="field">
+            <label for="units">Unit *</label>
+            <select id="units" required>
+              <option value="Bottles">Bottles</option>
+              <option value="Boxes">Boxes</option>
+              <option value="Grams">Grams</option>
+              <option value="Kg">Kg</option>
+              <option value="Liters">Liters</option>
+              <option value="Milliliters">Milliliters</option>
+              <option value="Packs">Packs</option>
+              <option value="Pcs">Pcs</option>
+            </select>
+            <div class="help-text" id="unitNote">
+              Default unit will be selected automatically.
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="price">Price per Unit (₹) *</label>
+            <input id="price" type="number" min="0"
+                   step="0.01" placeholder="Enter unit price" required>
+          </div>
+
         </div>
 
         <div class="button-row">
-          <button class="primary full-width" type="submit">
-            + Add to Cart
-          </button>
-          <button class="secondary full-width" type="reset">
-            Clear Form
-          </button>
+          <button type="submit" class="primary">+ Add to Cart</button>
+          <button type="reset" class="secondary">Clear Form</button>
         </div>
       </form>
     </section>
 
-    <!-- RIGHT SIDE: CART -->
+    <!-- PURCHASE CART: 40% -->
     <section class="panel">
-      <div class="cart-top">
+      <div class="cart-heading">
         <div>
           <h2>Purchase Cart</h2>
-          <p>Review items, change entries by deleting them, and save purchases.</p>
+          <p>Review items and remove any incorrect entry.</p>
         </div>
         <button type="button" class="secondary" id="clearCartBtn">
           Clear Cart
@@ -465,14 +437,13 @@ td { font-size: 13px; }
       </div>
 
       <div class="table-wrap">
-        <table>
+        <table class="cart-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Item Name</th>
-              <th class="right">Quantity</th>
+              <th>Item</th>
+              <th class="right">Qty</th>
               <th>Unit</th>
-              <th class="right">Price / Unit</th>
+              <th class="right">Price</th>
               <th class="right">Total</th>
               <th>Action</th>
             </tr>
@@ -481,30 +452,28 @@ td { font-size: 13px; }
         </table>
       </div>
 
-      <div class="cart-summary">
-        <div class="summary-box">
-          <div class="summary-row">
-            <span>Cart Entries</span>
-            <strong id="entryCount">0</strong>
-          </div>
-          <div class="summary-row">
-            <span>Total Quantity</span>
-            <strong id="totalQuantity">0</strong>
-          </div>
-          <div class="summary-row grand">
-            <span>Total Amount</span>
-            <strong id="totalValue">₹0.00</strong>
-          </div>
+      <div class="summary-box">
+        <div class="summary-row">
+          <span>Cart Entries</span>
+          <strong id="entryCount">0</strong>
         </div>
+        <div class="summary-row">
+          <span>Total Quantity</span>
+          <strong id="totalQuantity">0</strong>
+        </div>
+        <div class="summary-row grand">
+          <span>Total Amount</span>
+          <strong id="totalValue">₹0.00</strong>
+        </div>
+      </div>
 
-        <div class="cart-actions">
-          <button type="button" class="dark" id="saveBtn">
-            Save Purchases
-          </button>
-          <button type="button" class="secondary" id="exportCartBtn">
-            Export Cart CSV
-          </button>
-        </div>
+      <div class="cart-actions">
+        <button type="button" class="dark" id="saveBtn">
+          Save Purchases
+        </button>
+        <button type="button" class="secondary" id="exportCartBtn">
+          Export Cart CSV
+        </button>
       </div>
     </section>
 
@@ -514,11 +483,11 @@ td { font-size: 13px; }
   <section class="panel saved-panel">
     <div class="panel-heading">
       <h2>Saved Purchases</h2>
-      <p>Choose a date to view previously saved purchases.</p>
+      <p>Select a date to review saved purchases. The date is used internally.</p>
     </div>
 
     <div class="saved-toolbar">
-      <label for="savedDate">Purchase Date:</label>
+      <label for="savedDate">Saved Date:</label>
       <select id="savedDate">
         <option value="">No saved dates</option>
       </select>
@@ -529,7 +498,7 @@ td { font-size: 13px; }
     </div>
 
     <div class="table-wrap">
-      <table>
+      <table class="saved-table">
         <thead>
           <tr>
             <th>Item Name</th>
@@ -552,22 +521,17 @@ td { font-size: 13px; }
 
   <div class="footer">
     Wah! Chaat · Daily Purchase Register<br>
-    Browser storage prototype — Supabase connection is not yet configured.
+    Browser storage version — Supabase connection is not yet configured.
   </div>
 </main>
 
 <script>
 /*
 =========================================================
-ADD YOUR ITEMS HERE
+ADD OR EDIT ITEMS HERE
 =========================================================
-Item names are sorted alphabetically automatically.
-Set the default unit for each item.
-
-Example:
-{ name: "Paneer", defaultUnit: "Kg" },
-{ name: "Soft Drinks", defaultUnit: "Bottles" },
-{ name: "Disposable Cups", defaultUnit: "Pcs" }
+Add each item with its default unit.
+The dropdown is sorted alphabetically automatically.
 =========================================================
 */
 
@@ -593,12 +557,26 @@ const UNIT_OPTIONS = [
   "Liters", "Milliliters", "Packs", "Pcs"
 ];
 
-const CART_KEY = "wah_chaat_cart_v3";
-const SAVED_KEY = "wah_chaat_saved_days_v3";
+const CART_KEY = "wah_chaat_cart_v4";
+const SAVED_KEY = "wah_chaat_saved_days_v4";
 
 const $ = id => document.getElementById(id);
 
-function readStorage(key, fallback) {
+function getToday() {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  return now.toISOString().slice(0, 10);
+}
+
+/*
+Purchase date is assigned in the background.
+No date input is shown on the entry sheet.
+
+Subitem is also kept internally as an empty string.
+No subitem input is shown.
+*/
+
+function loadJSON(key, fallback) {
   try {
     const value = localStorage.getItem(key);
     return value ? JSON.parse(value) : fallback;
@@ -607,8 +585,16 @@ function readStorage(key, fallback) {
   }
 }
 
-let cart = readStorage(CART_KEY, []);
-let savedDays = readStorage(SAVED_KEY, {});
+let savedDays = loadJSON(SAVED_KEY, {});
+let storedCart = loadJSON(CART_KEY, []);
+const today = getToday();
+
+/*
+Only today's unsaved entries are displayed in the cart.
+Old saved days remain available in Saved Purchases.
+*/
+
+let cart = storedCart.filter(item => item.entry_date === today);
 
 function storeCart() {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
@@ -618,13 +604,7 @@ function storeSaved() {
   localStorage.setItem(SAVED_KEY, JSON.stringify(savedDays));
 }
 
-function localToday() {
-  const date = new Date();
-  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-  return date.toISOString().slice(0, 10);
-}
-
-function formatMoney(value) {
+function money(value) {
   return Number(value || 0).toLocaleString("en-IN", {
     style: "currency",
     currency: "INR",
@@ -634,16 +614,16 @@ function formatMoney(value) {
 }
 
 function safe(value) {
-  return String(value ?? "").replace(/[&<>"']/g, character => ({
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
     "'": "&#39;"
-  })[character]);
+  })[ch]);
 }
 
-function message(text, type = "success") {
+function showMessage(text, type = "success") {
   const box = $("notice");
   box.textContent = text;
   box.className = "notice " + type;
@@ -656,13 +636,13 @@ function clearMessage() {
 
 function setupItems() {
   const dropdown = $("itemName");
-  const sorted = [...ITEM_CATALOG].sort((a, b) =>
+  const items = [...ITEM_CATALOG].sort((a, b) =>
     a.name.localeCompare(b.name)
   );
 
   dropdown.innerHTML = '<option value="">Select item</option>';
 
-  sorted.forEach(item => {
+  items.forEach(item => {
     const option = document.createElement("option");
     option.value = item.name;
     option.textContent = item.name;
@@ -671,68 +651,62 @@ function setupItems() {
 }
 
 function updateDefaultUnit() {
-  const selected = ITEM_CATALOG.find(
-    item => item.name === $("itemName").value
+  const item = ITEM_CATALOG.find(
+    row => row.name === $("itemName").value
   );
 
-  if (!selected) {
+  if (!item) {
     $("unitNote").textContent =
-      "Select an item to load its default unit.";
+      "Default unit will be selected automatically.";
     return;
   }
 
-  $("units").value = UNIT_OPTIONS.includes(selected.defaultUnit)
-    ? selected.defaultUnit
+  $("units").value = UNIT_OPTIONS.includes(item.defaultUnit)
+    ? item.defaultUnit
     : "Kg";
 
-  $("unitNote").textContent =
-    "Default unit: " + $("units").value;
-}
-
-function selectedDate() {
-  return $("purchaseDate").value;
+  $("unitNote").textContent = "Default unit: " + $("units").value;
 }
 
 function renderCart() {
   const body = $("cartBody");
 
-  if (cart.length === 0) {
+  if (!cart.length) {
     body.innerHTML = `
       <tr>
-        <td colspan="7" class="empty">
+        <td colspan="6" class="empty">
           Your cart is empty.<br>
-          Add a purchase using the entry sheet.
+          Add items using the entry sheet.
         </td>
       </tr>`;
   } else {
     body.innerHTML = cart.map((item, index) => `
       <tr>
-        <td>${index + 1}</td>
         <td><span class="item-name">${safe(item.item_name)}</span></td>
         <td class="right">${safe(item.qty)}</td>
         <td>${safe(item.units)}</td>
-        <td class="right">${formatMoney(item.price)}</td>
-        <td class="right"><strong>${formatMoney(item.qty * item.price)}</strong></td>
+        <td class="right">${money(item.price)}</td>
+        <td class="right"><strong>${money(item.qty * item.price)}</strong></td>
         <td>
-          <button class="danger" type="button"
+          <button type="button" class="danger"
             data-delete="${index}">Delete</button>
         </td>
       </tr>
     `).join("");
   }
 
-  const totalQty = cart.reduce(
+  const quantity = cart.reduce(
     (sum, item) => sum + Number(item.qty), 0
   );
 
-  const totalAmount = cart.reduce(
+  const amount = cart.reduce(
     (sum, item) => sum + Number(item.qty) * Number(item.price), 0
   );
 
   $("entryCount").textContent = cart.length;
   $("totalQuantity").textContent =
-    Number(totalQty.toFixed(3)).toString();
-  $("totalValue").textContent = formatMoney(totalAmount);
+    Number(quantity.toFixed(3)).toString();
+  $("totalValue").textContent = money(amount);
 
   storeCart();
 }
@@ -778,13 +752,11 @@ function renderSaved(date) {
       <td><span class="item-name">${safe(item.item_name)}</span></td>
       <td class="right">${safe(item.qty)}</td>
       <td>${safe(item.units)}</td>
-      <td class="right">${formatMoney(item.price)}</td>
-      <td class="right"><strong>${formatMoney(item.qty * item.price)}</strong></td>
+      <td class="right">${money(item.price)}</td>
+      <td class="right"><strong>${money(item.qty * item.price)}</strong></td>
     </tr>
   `).join("");
 }
-
-$("purchaseDate").value = localToday();
 
 setupItems();
 updateDefaultUnit();
@@ -801,52 +773,39 @@ $("purchaseForm").addEventListener("submit", event => {
   event.preventDefault();
   clearMessage();
 
-  const date = selectedDate();
-  const name = $("itemName").value;
-  const subitem = $("subitem").value.trim();
+  const itemName = $("itemName").value;
   const qty = Number($("quantity").value);
   const units = $("units").value;
   const price = Number($("price").value);
 
-  if (!date || !name || !units) {
-    message("Please complete the required fields.", "error");
+  if (!itemName || !units) {
+    showMessage("Please complete the required fields.", "error");
     return;
   }
 
   if (!Number.isFinite(qty) || qty <= 0) {
-    message("Quantity must be greater than zero.", "error");
+    showMessage("Quantity must be greater than zero.", "error");
     return;
   }
 
   if (!Number.isFinite(price) || price < 0) {
-    message("Please enter a valid price.", "error");
+    showMessage("Please enter a valid unit price.", "error");
     return;
   }
 
   /*
-  Internal duplicate check:
-  same date + same item + same subitem is treated as a duplicate.
-  Subitem and date are not displayed in cart or saved output.
+  Background fields:
+  entry_date = today's date
+  subitem = empty string
+
+  These fields are retained internally and are not displayed
+  in the cart, saved-purchase table, or CSV.
   */
 
-  const duplicate = cart.some(item =>
-    item.entry_date === date &&
-    item.item_name.toLowerCase() === name.toLowerCase() &&
-    (item.subitem || "").toLowerCase() === subitem.toLowerCase()
-  );
-
-  if (duplicate) {
-    message(
-      "This item and subitem are already in the cart for this date. Use a different subitem for a separate purchase.",
-      "error"
-    );
-    return;
-  }
-
   cart.push({
-    entry_date: date,
-    item_name: name,
-    subitem: subitem,
+    entry_date: getToday(),
+    item_name: itemName,
+    subitem: "",
     qty: qty,
     units: units,
     price: price
@@ -855,12 +814,11 @@ $("purchaseForm").addEventListener("submit", event => {
   renderCart();
 
   $("itemName").value = "";
-  $("subitem").value = "";
   $("quantity").value = "";
   $("price").value = "";
   updateDefaultUnit();
 
-  message("Item added to cart.");
+  showMessage("Item added to cart.");
 });
 
 $("cartBody").addEventListener("click", event => {
@@ -868,57 +826,45 @@ $("cartBody").addEventListener("click", event => {
   if (!button) return;
 
   const index = Number(button.dataset.delete);
-  if (index < 0 || index >= cart.length) return;
+  if (!Number.isInteger(index) || index < 0 || index >= cart.length) {
+    return;
+  }
 
   cart.splice(index, 1);
   renderCart();
-  message("Item removed from cart.");
+  showMessage("Item removed from cart.");
 });
 
 $("clearCartBtn").addEventListener("click", () => {
   if (!cart.length) {
-    message("The cart is already empty.");
+    showMessage("The cart is already empty.");
     return;
   }
 
-  if (!confirm("Do you want to remove all items from the cart?")) return;
+  if (!confirm("Remove all items from the cart?")) return;
 
   cart = [];
   renderCart();
-  message("Cart cleared.");
+  showMessage("Cart cleared.");
 });
 
 $("saveBtn").addEventListener("click", () => {
   clearMessage();
 
   if (!cart.length) {
-    message("Add at least one item before saving.", "error");
+    showMessage("Add at least one item before saving.", "error");
     return;
   }
 
-  const date = selectedDate();
+  const date = getToday();
 
-  if (!date) {
-    message("Please select a purchase date.", "error");
-    return;
-  }
-
-  if (!cart.every(item => item.entry_date === date)) {
-    message(
-      "The cart contains entries from another date. Select the correct date before saving.",
-      "error"
-    );
-    return;
-  }
-
-  if (!confirm("Save " + cart.length + " item(s) for " + date + "?")) {
+  if (!confirm("Save " + cart.length + " purchase item(s) for today?")) {
     return;
   }
 
   if (!savedDays[date]) savedDays[date] = [];
 
   savedDays[date].push(...cart.map(item => ({ ...item })));
-
   storeSaved();
 
   cart = [];
@@ -930,7 +876,7 @@ $("saveBtn").addEventListener("click", () => {
   $("savedDate").value = date;
   renderSaved(date);
 
-  message("Purchases saved successfully in this browser.");
+  showMessage("Today's purchases have been saved in this browser.");
 });
 
 $("viewSavedBtn").addEventListener("click", () => {
@@ -941,19 +887,19 @@ $("savedDate").addEventListener("change", () => {
   renderSaved($("savedDate").value);
 });
 
-function csvEscape(value) {
+function csvCell(value) {
   return '"' + String(value ?? "").replace(/"/g, '""') + '"';
 }
 
 function exportCSV(filename, rows) {
   if (!rows.length) {
-    message("There are no records to export.", "error");
+    showMessage("There are no records to export.", "error");
     return;
   }
 
   /*
-  Output deliberately excludes purchase date and subitem.
-  Both remain stored internally.
+  Purchase date and subitem are intentionally excluded
+  from the exported output.
   */
 
   const headers = [
@@ -965,14 +911,14 @@ function exportCSV(filename, rows) {
   ];
 
   const lines = [
-    headers.map(csvEscape).join(","),
+    headers.map(csvCell).join(","),
     ...rows.map(item => [
       item.item_name,
       item.qty,
       item.units,
       Number(item.price).toFixed(2),
       (Number(item.qty) * Number(item.price)).toFixed(2)
-    ].map(csvEscape).join(","))
+    ].map(csvCell).join(","))
   ];
 
   const blob = new Blob(
@@ -990,7 +936,7 @@ function exportCSV(filename, rows) {
   link.remove();
 
   URL.revokeObjectURL(url);
-  message("CSV export started.");
+  showMessage("CSV export started.");
 }
 
 $("exportCartBtn").addEventListener("click", () => {
@@ -998,13 +944,13 @@ $("exportCartBtn").addEventListener("click", () => {
 });
 
 $("exportSavedBtn").addEventListener("click", () => {
-  const allRows = [];
+  const rows = [];
 
   Object.keys(savedDays).sort().forEach(date => {
-    savedDays[date].forEach(item => allRows.push(item));
+    savedDays[date].forEach(item => rows.push(item));
   });
 
-  exportCSV("wah-chaat-saved-purchases.csv", allRows);
+  exportCSV("wah-chaat-saved-purchases.csv", rows);
 });
 </script>
 
