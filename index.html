@@ -495,7 +495,20 @@
               >
             </div>
 
-            <div class="field">
+            <div class="field full">
+              <label for="price">Price per Unit (₹) <span class="required">*</span></label>
+              <input
+                id="price"
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="Enter price per unit"
+                required
+              >
+              <p class="helper">Enter the purchase price for one selected unit.</p>
+            </div>
+
+                        <div class="field">
               <label for="unit">Unit</label>
               <select id="unit" required>
                 <option value="">Select unit</option>
@@ -509,19 +522,7 @@
                 <option>Bottles</option>
               </select>
             </div>
-
-            <div class="field full">
-              <label for="price">Price per Unit (₹) <span class="required">*</span></label>
-              <input
-                id="price"
-                type="number"
-                min="0.01"
-                step="0.01"
-                placeholder="Enter price per unit"
-                required
-              >
-              <p class="helper">Enter the purchase price for one selected unit.</p>
-            </div>
+            
           </div>
 
           <div class="form-actions">
