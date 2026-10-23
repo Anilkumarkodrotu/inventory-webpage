@@ -608,6 +608,7 @@
 
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     "use strict";
 
@@ -631,14 +632,22 @@
 
     itemCatalog.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Keep existing storage keys so previously saved browser data remains available.
-    const CART_KEY = "wah_chaat_cart_v4";
-    const SAVED_KEY = "wah_chaat_saved_days_v4";
+    // Supabase connection details. The publishable key is intended for browser use.
+    // Database Row Level Security (RLS) must be enabled and configured in Supabase.
+    const SUPABASE_URL = "https://sgkylfvtvpmebalmrfxu.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8s-cpoN24jsiF_PtNW7q8w_m7O4eiul";
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
 
+    // The unsaved cart stays in this browser; saved purchases are stored in Supabase.
+    const CART_KEY = "wah_chaat_cart_v4";
     const $ = (id) => document.getElementById(id);
 
     let cart = loadStorage(CART_KEY, []);
-    let savedDays = loadStorage(SAVED_KEY, {});
+    let savedDays = {};
+    let databaseReady = false;
 
     function loadStorage(key, fallback) {
       try {
@@ -715,7 +724,7 @@
       return Number(entry.price || 0);
     }
 
-    function initializePage() {
+    async function initializePage() {
       $("todayLabel").textContent =
         "Purchase Date: " +
         new Date().toLocaleDateString("en-IN", {
@@ -725,8 +734,64 @@
         });
 
       populateItemDropdown();
-      refreshSavedDateDropdown();
       renderCart();
+      await loadSavedPurchasesFromSupabase();
+    }
+
+    // Read active saved purchases from Supabase table tbwcinv.
+    async function loadSavedPurchasesFromSupabase(preferredDate) {
+      const body = $("savedBody");
+      body.innerHTML = "";
+      $("savedEmpty").textContent = "Loading saved purchases...";
+      $("savedEmpty").style.display = "block";
+      $("savedTableWrap").style.display = "none";
+
+      let allRecords = [];
+      let from = 0;
+      const pageSize = 1000;
+
+      while (true) {
+        const { data, error } = await supabaseClient
+          .from("tbwcinv")
+          .select("entry_id, entry_date, item_name, subitem, qty, units, price, entry_time, is_deleted")
+          .eq("is_deleted", false)
+          .order("entry_date", { ascending: false })
+          .order("entry_id", { ascending: false })
+          .range(from, from + pageSize - 1);
+
+        if (error) {
+          console.error("Supabase load error:", error);
+          savedDays = {};
+          databaseReady = false;
+          refreshSavedDateDropdown();
+          renderSavedPurchases();
+          showNotice("Could not load purchases from Supabase. Check table permissions and RLS policies.", "error");
+          return;
+        }
+
+        allRecords = allRecords.concat(data || []);
+        if (!data || data.length < pageSize) break;
+        from += pageSize;
+      }
+
+      savedDays = {};
+      allRecords.forEach((record) => {
+        const date = String(record.entry_date || "").slice(0, 10);
+        if (!date) return;
+        if (!savedDays[date]) savedDays[date] = [];
+        savedDays[date].push({
+          id: record.entry_id,
+          item: record.item_name,
+          qty: Number(record.qty || 0),
+          unit: record.units || "",
+          price: Number(record.price || 0),
+          subitem: record.subitem || "",
+          entry_time: record.entry_time || ""
+        });
+      });
+
+      databaseReady = true;
+      refreshSavedDateDropdown(preferredDate);
       renderSavedPurchases();
     }
 
@@ -900,8 +965,8 @@
       showNotice("Today's purchase cart cleared successfully.");
     });
 
-    // Save today's cart into saved purchases.
-    $("savePurchasesBtn").addEventListener("click", function () {
+    // Save today's cart to Supabase. The cart is cleared only after the insert succeeds.
+    $("savePurchasesBtn").addEventListener("click", async function () {
       const today = localDateString();
       const todaysCart = getTodaysCart();
 
@@ -909,42 +974,47 @@
         showNotice("There are no items to save.", "error");
         return;
       }
+      if (!databaseReady) {
+        showNotice("Supabase is not ready. Check the connection and table permissions.", "error");
+        return;
+      }
+      if (!confirm("Save today's purchase entries to Supabase?")) return;
 
-      const previousDayEntries = savedDays[today] || [];
-
-      const entriesToSave = todaysCart.map((entry) => ({
-        item: entry.item,
+      const now = new Date();
+      const entryTime = [now.getHours(), now.getMinutes(), now.getSeconds()]
+        .map((part) => String(part).padStart(2, "0")).join(":");
+      const rowsToInsert = todaysCart.map((entry) => ({
+        entry_date: today,
+        item_name: entry.item,
+        subitem: entry.subitem || "",
         qty: Number(entry.qty),
-        unit: entry.unit,
+        units: entry.unit,
         price: Number(entry.price),
-        subitem: ""
+        entry_time: entryTime,
+        is_deleted: false
       }));
 
-      savedDays[today] = previousDayEntries.concat(entriesToSave);
+      const saveButton = $("savePurchasesBtn");
+      saveButton.disabled = true;
+      saveButton.textContent = "Saving...";
 
-      if (!saveStorage(SAVED_KEY, savedDays)) {
-        savedDays[today] = previousDayEntries;
-        return;
-      }
+      const { error } = await supabaseClient.from("tbwcinv").insert(rowsToInsert);
 
-      const previousCart = cart;
-      cart = cart.filter((entry) => entry.entry_date !== today);
-
-      if (!saveStorage(CART_KEY, cart)) {
-        cart = previousCart;
-        savedDays[today] = previousDayEntries;
-        saveStorage(SAVED_KEY, savedDays);
+      saveButton.textContent = "Save Today's Purchases";
+      if (error) {
+        console.error("Supabase insert error:", error);
         renderCart();
-
-        showNotice("Could not finish saving. Please try again.", "error");
+        showNotice("Save failed. Your cart is still available. Check Supabase RLS/table permissions.", "error");
         return;
       }
 
-      refreshSavedDateDropdown(today);
+      cart = cart.filter((entry) => entry.entry_date !== today);
+      if (!saveStorage(CART_KEY, cart)) {
+        showNotice("Purchases were saved in Supabase, but the local cart could not be updated. Please refresh and verify before saving again.", "error");
+      }
       renderCart();
-      renderSavedPurchases();
-
-      showNotice("Today's purchases saved successfully.");
+      await loadSavedPurchasesFromSupabase(today);
+      showNotice("Today's purchases saved to Supabase successfully.");
     });
 
     // Saved purchase date dropdown.
@@ -1012,6 +1082,7 @@
 
       $("savedTotalAmount").textContent = money(totalAmount);
       $("savedTotal").style.display = entries.length ? "flex" : "none";
+      $("savedEmpty").textContent = "No saved purchases for the selected date.";
       $("savedEmpty").style.display = entries.length ? "none" : "block";
       $("savedTableWrap").style.display = entries.length ? "block" : "none";
       $("exportSavedBtn").disabled = entries.length === 0;
