@@ -1,369 +1,1005 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
-  <title>Wah Chaat | Inventory</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wah! Chaat | Daily Purchase Register</title>
+
   <style>
     :root {
-      --white: #ffffff;
-      --yellow: #ffd43b;
+      --yellow: #ffd429;
+      --yellow-light: #fff8d9;
       --black: #171717;
-      --muted-black: #555555;
-      --line: #e9e9e9;
-      --soft-yellow: #fff8d9;
-      --radius: 16px;
-      --shadow: 0 12px 32px rgba(0,0,0,.06);
+      --grey: #666;
+      --border: #e7e7e7;
+      --background: #f8f8f6;
+      --white: #fff;
+      --danger: #c62828;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      background: var(--white);
+      background: var(--background);
       color: var(--black);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 14px;
+    }
+
+    .header {
+      background: var(--white);
+      border-bottom: 4px solid var(--yellow);
+      padding: 20px 5%;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .brand span {
+      background: var(--yellow);
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--grey);
+      font-size: 13px;
+    }
+
+    .header-tag {
+      background: var(--yellow-light);
+      border: 1px solid #f0d65b;
+      border-radius: 20px;
+      padding: 9px 14px;
+      font-weight: 700;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 26px auto;
+      padding: 0 18px 40px;
+    }
+
+    .section {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.025);
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      font-size: 19px;
+      margin: 0;
+    }
+
+    .section-description {
+      color: var(--grey);
+      margin: 7px 0 0;
       line-height: 1.5;
     }
-    button, input, select { font: inherit; }
-    button { cursor: pointer; }
-    .shell { min-height: 100vh; }
-    .topbar {
-      position: sticky; top: 0; z-index: 5;
-      display: flex; align-items: center; justify-content: space-between; gap: 20px;
-      padding: 16px clamp(18px, 4vw, 52px);
-      background: var(--white); border-bottom: 1px solid var(--line);
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
     }
-    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-    .brand-mark {
-      display: grid; place-items: center; width: 42px; height: 42px;
-      background: var(--yellow); border-radius: 12px; color: var(--black);
-      font-size: 22px; font-weight: 800; letter-spacing: -1.5px;
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 0;
     }
-    .brand-name { margin: 0; font-size: 19px; font-weight: 800; letter-spacing: -.7px; line-height: 1.15; }
-    .brand-sub { margin: 3px 0 0; color: var(--muted-black); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .date-chip { border: 1px solid var(--line); border-radius: 999px; padding: 8px 12px; font-size: 12px; color: var(--muted-black); white-space: nowrap; }
-    .main { max-width: 1240px; margin: 0 auto; padding: 34px clamp(16px, 4vw, 48px) 54px; }
-    .page-heading { display: flex; justify-content: space-between; align-items: end; gap: 18px; margin-bottom: 26px; }
-    .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-    .eyebrow:before { content: ""; display: inline-block; width: 22px; height: 4px; border-radius: 4px; background: var(--yellow); }
-    h1 { margin: 0; font-size: clamp(27px, 4vw, 36px); line-height: 1.12; letter-spacing: -1.4px; font-weight: 800; }
-    .page-description { margin: 9px 0 0; color: var(--muted-black); max-width: 610px; font-size: 14px; }
-    .primary-btn, .secondary-btn, .icon-btn {
-      display: inline-flex; justify-content: center; align-items: center; gap: 8px;
-      min-height: 42px; border-radius: 11px; padding: 10px 15px; font-weight: 700;
-      transition: transform .15s ease, background .15s ease;
+
+    .field label {
+      font-weight: 700;
+      font-size: 13px;
     }
-    .primary-btn { border: 1px solid var(--yellow); background: var(--yellow); color: var(--black); }
-    .primary-btn:hover { background: #f2c51c; transform: translateY(-1px); }
-    .secondary-btn { background: var(--white); color: var(--black); border: 1px solid #dcdcdc; }
-    .secondary-btn:hover { background: #f8f8f8; }
-    .icon-btn { width: 42px; padding: 0; background: var(--white); border: 1px solid var(--line); color: var(--black); }
-    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 22px; }
-    .stat-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; background: var(--white); }
-    .stat-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--muted-black); font-size: 12px; font-weight: 600; }
-    .stat-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--soft-yellow); color: var(--black); font-size: 16px; }
-    .stat-value { margin: 12px 0 2px; font-size: 28px; line-height: 1; font-weight: 800; letter-spacing: -.9px; }
-    .stat-note { color: var(--muted-black); font-size: 11px; }
-    .content-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr); gap: 20px; align-items: start; }
-    .panel { border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); overflow: hidden; }
-    .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 20px 22px; border-bottom: 1px solid var(--line); }
-    .panel-head h2 { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.3px; }
-    .panel-head p { margin: 4px 0 0; color: var(--muted-black); font-size: 12px; }
-    .panel-body { padding: 22px; }
-    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-    .field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
-    .field.full { grid-column: 1 / -1; }
-    label { font-size: 12px; font-weight: 700; }
-    .required { color: var(--black); }
+
+    .optional {
+      color: var(--grey);
+      font-weight: 400;
+    }
+
     input, select {
-      width: 100%; min-height: 44px; padding: 10px 12px; color: var(--black);
-      background: var(--white); border: 1px solid #dcdcdc; border-radius: 10px; outline: none;
+      width: 100%;
+      min-width: 0;
+      padding: 11px 12px;
+      border: 1px solid #d8d8d8;
+      border-radius: 7px;
+      background: #fff;
+      color: var(--black);
+      font-size: 14px;
+      outline: none;
     }
-    input::placeholder { color: #888888; }
-    input:focus, select:focus { border-color: var(--black); box-shadow: 0 0 0 3px rgba(255,212,59,.35); }
-    .helper { margin: 0; color: var(--muted-black); font-size: 11px; }
-    .form-actions { display: flex; gap: 10px; margin-top: 20px; }
-    .form-actions button { flex: 1; }
-    .summary-box { background: var(--soft-yellow); border-radius: 13px; padding: 16px; margin-top: 18px; }
-    .summary-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; padding: 5px 0; }
-    .summary-row.total { border-top: 1px solid rgba(23,23,23,.18); margin-top: 8px; padding-top: 13px; font-size: 15px; font-weight: 800; }
-    .history-toolbar { display: flex; gap: 10px; align-items: center; padding: 16px 22px; border-bottom: 1px solid var(--line); }
-    .history-toolbar input { flex: 1; min-width: 100px; }
-    .table-wrap { overflow-x: auto; }
-    table { border-collapse: collapse; width: 100%; min-width: 510px; text-align: left; }
-    th { background: #fafafa; color: var(--muted-black); font-size: 10px; letter-spacing: .07em; text-transform: uppercase; font-weight: 800; }
-    th, td { padding: 13px 16px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-    td { font-size: 12px; }
-    tbody tr:last-child td { border-bottom: 0; }
+
+    input:focus, select:focus {
+      border-color: #d1a900;
+      box-shadow: 0 0 0 3px rgba(255,212,41,.2);
+    }
+
+    .unit-note {
+      font-size: 12px;
+      color: var(--grey);
+      margin-top: -2px;
+    }
+
+    .form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 7px;
+      padding: 11px 15px;
+      font-size: 13px;
+      font-weight: 700;
+      transition: opacity .15s;
+    }
+
+    button:hover { opacity: .86; }
+
+    .primary {
+      background: var(--yellow);
+      color: var(--black);
+    }
+
+    .dark {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .secondary {
+      background: #eee;
+      color: var(--black);
+    }
+
+    .danger {
+      background: #fff0f0;
+      color: var(--danger);
+      border: 1px solid #f2cccc;
+      padding: 7px 10px;
+    }
+
+    .small {
+      padding: 8px 11px;
+      font-size: 12px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 13px 11px;
+      border-bottom: 1px solid #ededed;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #fff8d9;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      white-space: nowrap;
+    }
+
+    td { font-size: 13px; }
+
+    .number, .money {
+      text-align: right;
+      white-space: nowrap;
+    }
+
     .item-name { font-weight: 700; }
-    .tag { display: inline-flex; padding: 4px 8px; border-radius: 999px; background: var(--soft-yellow); font-size: 10px; font-weight: 800; }
-    .empty-state { padding: 34px 18px; text-align: center; color: var(--muted-black); }
-    .empty-icon { display: grid; place-items: center; margin: 0 auto 12px; width: 44px; height: 44px; background: var(--soft-yellow); border-radius: 14px; font-size: 20px; }
-    .empty-state strong { display: block; color: var(--black); margin-bottom: 4px; }
-    .footer { padding: 22px; text-align: center; color: var(--muted-black); font-size: 11px; }
-    .notice { border: 1px solid var(--line); border-left: 4px solid var(--yellow); padding: 12px 14px; border-radius: 10px; color: var(--muted-black); font-size: 12px; margin-top: 18px; }
-    .toast { display: none; position: fixed; right: 20px; bottom: 20px; z-index: 10; max-width: calc(100vw - 40px); background: var(--black); color: var(--white); padding: 13px 16px; border-radius: 12px; box-shadow: var(--shadow); }
-    .toast.show { display: block; }
-    @media (max-width: 900px) {
-      .content-grid { grid-template-columns: 1fr; }
+
+    .subitem-text {
+      display: block;
+      color: var(--grey);
+      margin-top: 4px;
+      font-size: 12px;
     }
-    @media (max-width: 620px) {
-      .topbar { padding: 13px 16px; }
-      .date-chip { display: none; }
-      .main { padding-top: 25px; }
-      .page-heading { align-items: start; flex-direction: column; }
-      .stats { grid-template-columns: 1fr; }
-      .stat-card { padding: 15px 17px; }
-      .stat-value { font-size: 25px; }
-      .panel-head, .panel-body, .history-toolbar { padding-left: 16px; padding-right: 16px; }
+
+    .empty {
+      text-align: center;
+      color: var(--grey);
+      padding: 35px 15px;
+    }
+
+    .cart-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .cart-help {
+      color: var(--grey);
+      line-height: 1.6;
+      max-width: 450px;
+    }
+
+    .totals {
+      background: var(--yellow-light);
+      border: 1px solid #f1df89;
+      border-radius: 9px;
+      padding: 15px 18px;
+      min-width: 240px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 22px;
+      padding: 5px 0;
+    }
+
+    .total-row.grand {
+      border-top: 1px solid #e7d36e;
+      margin-top: 7px;
+      padding-top: 12px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .saved-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .saved-controls select {
+      min-width: 180px;
+      width: auto;
+    }
+
+    .status {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 7px;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .status.success {
+      display: block;
+      background: #eaf7ed;
+      color: #216e35;
+      border: 1px solid #c9e8d0;
+    }
+
+    .status.error {
+      display: block;
+      background: #fff0f0;
+      color: #a32121;
+      border: 1px solid #f2cccc;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--grey);
+      font-size: 12px;
+      padding: 10px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 540px) {
       .form-grid { grid-template-columns: 1fr; }
-      .field.full { grid-column: auto; }
-      .form-actions { flex-direction: column; }
+      .section { padding: 16px; }
+      .brand { font-size: 24px; }
+      main { margin-top: 16px; padding: 0 10px 25px; }
+      .totals { width: 100%; }
+      .saved-controls select { width: 100%; }
     }
   </style>
 </head>
+
 <body>
-  <div class="shell">
-    <header class="topbar">
-      <div class="brand" aria-label="Wah Chaat Inventory">
-        <div class="brand-mark">W</div>
+  <header class="header">
+    <div class="header-inner">
+      <div>
+        <div class="brand">Wah! <span>Chaat</span></div>
+        <div class="subtitle">Daily Purchase Register</div>
+      </div>
+      <div class="header-tag">DAILY INVENTORY</div>
+    </div>
+  </header>
+
+  <main>
+    <div id="statusMessage" class="status" role="status"></div>
+
+    <section class="section">
+      <div class="section-heading">
         <div>
-          <p class="brand-name">Wah Chaat</p>
-          <p class="brand-sub">Inventory workspace</p>
+          <h2>Add Purchase Item</h2>
+          <p class="section-description">
+            Enter the items purchased today and add them to the cart.
+          </p>
         </div>
       </div>
-      <div class="topbar-right">
-        <div class="date-chip" id="todayLabel">Today</div>
-        <button class="icon-btn" type="button" aria-label="Help" title="Help" onclick="showToast('For help, contact your inventory administrator.')">?</button>
-      </div>
-    </header>
 
-    <main class="main">
-      <section class="page-heading">
-        <div>
-          <p class="eyebrow">Daily operations</p>
-          <h1>Inventory overview</h1>
-          <p class="page-description">Record daily stock purchases, keep quantities consistent, and review your entries in one simple workspace.</p>
-        </div>
-        <button class="primary-btn" type="button" onclick="document.getElementById('itemName').focus()">＋ Add inventory</button>
-      </section>
-
-      <section class="stats" aria-label="Inventory summary">
-        <article class="stat-card">
-          <div class="stat-top"><span>Entries today</span><span class="stat-icon">▤</span></div>
-          <div class="stat-value" id="entryCount">0</div>
-          <div class="stat-note">Records added in this browser</div>
-        </article>
-        <article class="stat-card">
-          <div class="stat-top"><span>Total quantity today</span><span class="stat-icon">↗</span></div>
-          <div class="stat-value" id="totalQty">0</div>
-          <div class="stat-note">Combined quantity across entries</div>
-        </article>
-        <article class="stat-card">
-          <div class="stat-top"><span>Total purchase value</span><span class="stat-icon">₹</span></div>
-          <div class="stat-value" id="totalValue">₹0.00</div>
-          <div class="stat-note">Quantity × unit price</div>
-        </article>
-      </section>
-
-      <section class="content-grid">
-        <article class="panel" id="entryPanel">
-          <div class="panel-head">
-            <div>
-              <h2>Add inventory entry</h2>
-              <p>Enter the details below to prepare a record.</p>
-            </div>
-            <span class="tag">NEW ENTRY</span>
+      <form id="purchaseForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="purchaseDate">Purchase Date *</label>
+            <input type="date" id="purchaseDate" required>
           </div>
-          <div class="panel-body">
-            <form id="inventoryForm">
-              <div class="form-grid">
-                <div class="field full">
-                  <label for="itemName">Item name <span class="required">*</span></label>
-                  <select id="itemName" required>
-                    <option value="">Select an item</option>
-                    <option>Potatoes</option><option>Onions</option><option>Tomatoes</option>
-                    <option>Green chillies</option><option>Coriander</option><option>Curd</option>
-                    <option>Chaat masala</option><option>Sev</option><option>Puri</option>
-                    <option>Oil</option><option>Flour</option><option>Other</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="subItem">Sub-item / variant</label>
-                  <input id="subItem" maxlength="2" placeholder="Optional, max 2 characters">
-                  <p class="helper">Optional short code.</p>
-                </div>
-                <div class="field">
-                  <label for="entryDate">Entry date <span class="required">*</span></label>
-                  <input id="entryDate" type="date" required>
-                </div>
-                <div class="field">
-                  <label for="quantity">Quantity <span class="required">*</span></label>
-                  <input id="quantity" type="number" min="0.001" step="0.001" placeholder="e.g. 5" required>
-                </div>
-                <div class="field">
-                  <label for="unit">Unit <span class="required">*</span></label>
-                  <select id="unit" required>
-                    <option value="">Select unit</option>
-                    <option>Kg</option><option>Grams</option><option>Liters</option>
-                    <option>Milliliters</option><option>Packs</option><option>Pcs</option>
-                    <option>Boxes</option><option>Bottles</option>
-                  </select>
-                </div>
-                <div class="field full">
-                  <label for="price">Price per unit (₹) <span class="required">*</span></label>
-                  <input id="price" type="number" min="0.01" step="0.01" placeholder="e.g. 42.50" required>
-                  <p class="helper">Enter the price for one selected unit.</p>
-                </div>
-              </div>
-              <div class="summary-box" aria-live="polite">
-                <div class="summary-row"><span>Quantity</span><strong id="summaryQty">—</strong></div>
-                <div class="summary-row"><span>Price per unit</span><strong id="summaryPrice">—</strong></div>
-                <div class="summary-row total"><span>Entry total</span><strong id="summaryTotal">₹0.00</strong></div>
-              </div>
-              <div class="form-actions">
-                <button class="primary-btn" type="submit">＋ Save entry</button>
-                <button class="secondary-btn" type="reset">Clear fields</button>
-              </div>
-              <div class="notice">Prototype mode: entries are saved only in this browser. Connect Supabase authentication and your <strong>tbwcinv</strong> table before using this page for shared or live inventory.</div>
-            </form>
-          </div>
-        </article>
 
-        <article class="panel">
-          <div class="panel-head">
-            <div>
-              <h2>Recent entries</h2>
-              <p>Review the entries created in this browser.</p>
-            </div>
-            <button class="secondary-btn" type="button" id="exportBtn">Export CSV</button>
-          </div>
-          <div class="history-toolbar">
-            <input id="searchInput" type="search" aria-label="Search entries" placeholder="Search item name…">
-            <select id="filterUnit" aria-label="Filter by unit" style="max-width: 125px">
-              <option value="">All units</option>
-              <option>Kg</option><option>Grams</option><option>Liters</option>
-              <option>Milliliters</option><option>Packs</option><option>Pcs</option>
-              <option>Boxes</option><option>Bottles</option>
+          <div class="field">
+            <label for="itemName">Item Name *</label>
+            <select id="itemName" required>
+              <option value="">Select item</option>
             </select>
           </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Date</th><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
-              <tbody id="entriesBody"></tbody>
-            </table>
-            <div class="empty-state" id="emptyState">
-              <div class="empty-icon">▤</div>
-              <strong>No entries yet</strong>
-              <span>Your saved inventory entries will appear here.</span>
-            </div>
+
+          <div class="field">
+            <label for="subitem">Subitem <span class="optional">(Optional)</span></label>
+            <input type="text" id="subitem" maxlength="50"
+                   placeholder="e.g. Supplier or brand">
           </div>
-          <div class="footer">Wah Chaat · Daily inventory</div>
-        </article>
-      </section>
-    </main>
-  </div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+          <div class="field">
+            <label for="quantity">Quantity *</label>
+            <input type="number" id="quantity" min="0.001"
+                   step="any" placeholder="Enter quantity" required>
+          </div>
+
+          <div class="field">
+            <label for="units">Unit *</label>
+            <select id="units" required>
+              <option value="Kg">Kg</option>
+              <option value="Grams">Grams</option>
+              <option value="Liters">Liters</option>
+              <option value="Milliliters">Milliliters</option>
+              <option value="Pcs">Pcs</option>
+              <option value="Packs">Packs</option>
+              <option value="Bottles">Bottles</option>
+              <option value="Boxes">Boxes</option>
+            </select>
+            <div class="unit-note" id="unitNote">Select an item to load its default unit.</div>
+          </div>
+
+          <div class="field">
+            <label for="price">Price per Unit (₹) *</label>
+            <input type="number" id="price" min="0"
+                   step="0.01" placeholder="Enter unit price" required>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="primary">+ Add to Cart</button>
+          <button type="reset" class="secondary">Clear Form</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <h2>Purchase Cart</h2>
+          <p class="section-description" id="cartDateLabel">
+            Items added for the selected purchase date.
+          </p>
+        </div>
+        <button type="button" class="secondary small" id="clearCartBtn">
+          Clear Cart
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Item / Subitem</th>
+              <th>Quantity</th>
+              <th>Unit</th>
+              <th class="money">Price / Unit</th>
+              <th class="money">Total</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="cartBody"></tbody>
+        </table>
+      </div>
+
+      <div class="cart-footer">
+        <div class="cart-help">
+          Add different subitems when you need to record separate purchases of
+          the same item. Use Delete to remove an item before saving.
+          <div class="form-actions">
+            <button type="button" class="dark" id="savePurchasesBtn">
+              Save Purchases
+            </button>
+            <button type="button" class="secondary" id="exportCartBtn">
+              Export Cart CSV
+            </button>
+          </div>
+        </div>
+
+        <div class="totals">
+          <div class="total-row">
+            <span>Cart Entries</span>
+            <strong id="entryCount">0</strong>
+          </div>
+          <div class="total-row">
+            <span>Total Quantity</span>
+            <strong id="totalQuantity">0</strong>
+          </div>
+          <div class="total-row grand">
+            <span>Purchase Value</span>
+            <strong id="totalValue">₹0.00</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <h2>Saved Purchases</h2>
+          <p class="section-description">
+            View previously saved dates or export saved records to CSV.
+          </p>
+        </div>
+      </div>
+
+      <div class="saved-controls">
+        <label for="savedDate"><strong>Select Date:</strong></label>
+        <select id="savedDate">
+          <option value="">No saved dates</option>
+        </select>
+        <button type="button" class="primary" id="viewSavedBtn">View</button>
+        <button type="button" class="secondary" id="exportSavedBtn">
+          Export All Saved CSV
+        </button>
+      </div>
+
+      <div style="margin-top:20px" class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Item / Subitem</th>
+              <th>Quantity</th>
+              <th>Unit</th>
+              <th class="money">Price / Unit</th>
+              <th class="money">Total</th>
+            </tr>
+          </thead>
+          <tbody id="savedBody">
+            <tr><td colspan="6" class="empty">Select a saved date to view purchases.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      Wah! Chaat · Daily Purchase Register<br>
+      Browser storage prototype — connect Supabase for shared staff access and central storage.
+    </div>
+  </main>
 
   <script>
-    // UI prototype only. This local browser storage is NOT shared or secure.
-    // Before live use, replace localStorage persistence with Supabase Auth + RLS-protected tbwcinv access.
-    const STORAGE_KEY = "wah_chaat_inventory_demo";
-    const $ = (id) => document.getElementById(id);
-    let entries = [];
-    try { entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch (_) { entries = []; }
+    /*
+    ============================================================
+    ADD OR EDIT ITEMS HERE
+    ============================================================
+    1. Add one new line for each item.
+    2. Enter the item's default unit.
+    3. Item names are automatically displayed alphabetically.
+    4. Use one of the units listed in UNIT_OPTIONS below.
+    ============================================================
+    */
 
-    const today = new Date();
-    const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-    $("entryDate").value = localDate;
-    $("todayLabel").textContent = today.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    const ITEM_CATALOG = [
+      { name: "Atta", defaultUnit: "Kg" },
+      { name: "Besan", defaultUnit: "Kg" },
+      { name: "Butter", defaultUnit: "Kg" },
+      { name: "Cooking Oil", defaultUnit: "Liters" },
+      { name: "Curd", defaultUnit: "Kg" },
+      { name: "Green Chilli", defaultUnit: "Kg" },
+      { name: "Milk", defaultUnit: "Liters" },
+      { name: "Onions", defaultUnit: "Kg" },
+      { name: "Paper Plates", defaultUnit: "Pcs" },
+      { name: "Pani Puri", defaultUnit: "Packs" },
+      { name: "Potatoes", defaultUnit: "Kg" },
+      { name: "Rice", defaultUnit: "Kg" },
+      { name: "Salt", defaultUnit: "Kg" },
+      { name: "Tomatoes", defaultUnit: "Kg" }
+    ];
+
+    const UNIT_OPTIONS = [
+      "Bottles",
+      "Boxes",
+      "Grams",
+      "Kg",
+      "Liters",
+      "Milliliters",
+      "Packs",
+      "Pcs"
+    ];
+
+    /*
+    Browser storage keys.
+    Keep these names unchanged if you want to retain existing data.
+    */
+
+    const CART_KEY = "wah_chaat_cart_v2";
+    const SAVED_KEY = "wah_chaat_saved_days_v2";
+
+    const $ = id => document.getElementById(id);
+
+    let cart = loadJSON(CART_KEY, []);
+    let savedDays = loadJSON(SAVED_KEY, {});
+
+    function loadJSON(key, fallback) {
+      try {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function persistCart() {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    }
+
+    function persistSavedDays() {
+      localStorage.setItem(SAVED_KEY, JSON.stringify(savedDays));
+    }
+
+    function todayString() {
+      const now = new Date();
+      const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 10);
+    }
 
     function money(value) {
-      return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(Number(value) || 0);
+      return Number(value || 0).toLocaleString("en-IN", {
+        style: "currency",
+        currency: "INR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
     }
+
     function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
     }
-    function showToast(message) {
-      const toast = $("toast");
-      toast.textContent = message;
-      toast.classList.add("show");
-      clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toast.classList.remove("show"), 3000);
+
+    function showMessage(message, type = "success") {
+      const box = $("statusMessage");
+      box.textContent = message;
+      box.className = "status " + type;
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-    function updatePreview() {
-      const qty = Number($("quantity").value);
-      const price = Number($("price").value);
-      const unit = $("unit").value;
-      $("summaryQty").textContent = qty > 0 ? `${qty.toLocaleString("en-IN")} ${unit}`.trim() : "—";
-      $("summaryPrice").textContent = price > 0 ? money(price) : "—";
-      $("summaryTotal").textContent = money(qty > 0 && price > 0 ? qty * price : 0);
+
+    function clearMessage() {
+      $("statusMessage").className = "status";
+      $("statusMessage").textContent = "";
     }
-    function renderEntries() {
-      const search = $("searchInput").value.trim().toLowerCase();
-      const unitFilter = $("filterUnit").value;
-      const filtered = entries.filter(entry =>
-        entry.item.toLowerCase().includes(search) && (!unitFilter || entry.unit === unitFilter)
+
+    function fillItemDropdown() {
+      const select = $("itemName");
+
+      const sortedItems = [...ITEM_CATALOG].sort((a, b) =>
+        a.name.localeCompare(b.name)
       );
-      $("entriesBody").innerHTML = filtered.map(entry => `
-        <tr>
-          <td>${escapeHTML(entry.date)}</td>
-          <td><span class="item-name">${escapeHTML(entry.item)}</span>${entry.subItem ? `<br><span style="color:#555;font-size:10px">Code: ${escapeHTML(entry.subItem)}</span>` : ""}</td>
-          <td>${Number(entry.qty).toLocaleString("en-IN")} ${escapeHTML(entry.unit)}</td>
-          <td><strong>${money(entry.qty * entry.price)}</strong></td>
-        </tr>`).join("");
-      $("emptyState").style.display = filtered.length ? "none" : "block";
-      $("entryCount").textContent = entries.filter(entry => entry.date === localDate).length.toLocaleString("en-IN");
-      const todays = entries.filter(entry => entry.date === localDate);
-      $("totalQty").textContent = todays.reduce((sum, entry) => sum + Number(entry.qty), 0).toLocaleString("en-IN", { maximumFractionDigits: 3 });
-      $("totalValue").textContent = money(todays.reduce((sum, entry) => sum + Number(entry.qty) * Number(entry.price), 0));
+
+      select.innerHTML = '<option value="">Select item</option>';
+
+      sortedItems.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item.name;
+        option.textContent = item.name;
+        select.appendChild(option);
+      });
     }
-    ["quantity", "price", "unit"].forEach(id => $(id).addEventListener("input", updatePreview));
-    $("inventoryForm").addEventListener("reset", () => setTimeout(() => {
-      $("entryDate").value = localDate;
-      updatePreview();
-    }, 0));
-    $("inventoryForm").addEventListener("submit", event => {
-      event.preventDefault();
-      const item = $("itemName").value;
-      const subItem = $("subItem").value.trim();
-      const date = $("entryDate").value;
-      const qty = Number($("quantity").value);
-      const unit = $("unit").value;
-      const price = Number($("price").value);
-      if (!item || !date || !unit || !(qty > 0) || !(price > 0)) {
-        showToast("Please complete all required fields with valid values.");
+
+    function setDefaultUnit() {
+      const selectedName = $("itemName").value;
+      const item = ITEM_CATALOG.find(x => x.name === selectedName);
+
+      if (!item) {
+        $("unitNote").textContent = "Select an item to load its default unit.";
         return;
       }
-      entries.unshift({ id: Date.now(), item, subItem, date, qty, unit, price });
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }
-      catch (_) { showToast("Could not save in this browser."); return; }
-      $("inventoryForm").reset();
-      renderEntries();
-      updatePreview();
-      showToast("Entry saved in this browser only.");
+
+      $("units").value = UNIT_OPTIONS.includes(item.defaultUnit)
+        ? item.defaultUnit
+        : "Kg";
+
+      $("unitNote").textContent =
+        "Default unit for " + item.name + ": " + $("units").value;
+    }
+
+    function getSelectedDate() {
+      return $("purchaseDate").value;
+    }
+
+    function renderCart() {
+      const body = $("cartBody");
+      const selectedDate = getSelectedDate();
+
+      $("cartDateLabel").textContent =
+        "Purchase date: " + (selectedDate || "Not selected");
+
+      if (cart.length === 0) {
+        body.innerHTML =
+          '<tr><td colspan="7" class="empty">Your cart is empty. Add a purchase item above.</td></tr>';
+      } else {
+        body.innerHTML = cart.map((item, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>
+              <span class="item-name">${escapeHTML(item.item_name)}</span>
+              ${item.subitem
+                ? `<span class="subitem-text">Subitem: ${escapeHTML(item.subitem)}</span>`
+                : ""}
+            </td>
+            <td>${escapeHTML(item.qty)}</td>
+            <td>${escapeHTML(item.units)}</td>
+            <td class="money">${money(item.price)}</td>
+            <td class="money"><strong>${money(item.qty * item.price)}</strong></td>
+            <td>
+              <button type="button" class="danger small"
+                data-delete-index="${index}">Delete</button>
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      const totalQuantity = cart.reduce((sum, item) => sum + Number(item.qty), 0);
+      const totalValue = cart.reduce(
+        (sum, item) => sum + Number(item.qty) * Number(item.price), 0
+      );
+
+      $("entryCount").textContent = cart.length;
+      $("totalQuantity").textContent = Number(totalQuantity.toFixed(3)).toString();
+      $("totalValue").textContent = money(totalValue);
+
+      persistCart();
+    }
+
+    function renderSavedDates() {
+      const select = $("savedDate");
+      const previousValue = select.value;
+      const dates = Object.keys(savedDays).sort().reverse();
+
+      select.innerHTML = "";
+
+      if (dates.length === 0) {
+        select.innerHTML = '<option value="">No saved dates</option>';
+        return;
+      }
+
+      dates.forEach(date => {
+        const option = document.createElement("option");
+        option.value = date;
+        option.textContent = date;
+        select.appendChild(option);
+      });
+
+      if (dates.includes(previousValue)) {
+        select.value = previousValue;
+      }
+    }
+
+    function renderSavedDate(date) {
+      const body = $("savedBody");
+      const entries = savedDays[date] || [];
+
+      if (!date || entries.length === 0) {
+        body.innerHTML =
+          '<tr><td colspan="6" class="empty">No saved purchases for this date.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = entries.map(item => `
+        <tr>
+          <td>${escapeHTML(date)}</td>
+          <td>
+            <span class="item-name">${escapeHTML(item.item_name)}</span>
+            ${item.subitem
+              ? `<span class="subitem-text">Subitem: ${escapeHTML(item.subitem)}</span>`
+              : ""}
+          </td>
+          <td>${escapeHTML(item.qty)}</td>
+          <td>${escapeHTML(item.units)}</td>
+          <td class="money">${money(item.price)}</td>
+          <td class="money"><strong>${money(item.qty * item.price)}</strong></td>
+        </tr>
+      `).join("");
+    }
+
+    $("purchaseDate").value = todayString();
+    fillItemDropdown();
+    setDefaultUnit();
+    renderCart();
+    renderSavedDates();
+
+    $("itemName").addEventListener("change", setDefaultUnit);
+
+    $("purchaseDate").addEventListener("change", () => {
+      renderCart();
+      clearMessage();
     });
-    $("searchInput").addEventListener("input", renderEntries);
-    $("filterUnit").addEventListener("change", renderEntries);
-    $("exportBtn").addEventListener("click", () => {
-      if (!entries.length) { showToast("There are no entries to export yet."); return; }
-      const rows = [["Entry date", "Item name", "Sub-item", "Quantity", "Unit", "Price", "Total"]];
-      entries.forEach(e => rows.push([e.date, e.item, e.subItem, e.qty, e.unit, e.price, (e.qty * e.price).toFixed(2)]));
-      const csv = rows.map(row => row.map(value => `"${String(value).replace(/"/g, '""')}"`).join(",")).join("\r\n");
-      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+
+    $("purchaseForm").addEventListener("submit", event => {
+      event.preventDefault();
+      clearMessage();
+
+      const date = getSelectedDate();
+      const itemName = $("itemName").value;
+      const subitem = $("subitem").value.trim();
+      const qty = Number($("quantity").value);
+      const units = $("units").value;
+      const price = Number($("price").value);
+
+      if (!date || !itemName || !units) {
+        showMessage("Please complete all required fields.", "error");
+        return;
+      }
+
+      if (!Number.isFinite(qty) || qty <= 0) {
+        showMessage("Quantity must be greater than zero.", "error");
+        return;
+      }
+
+      if (!Number.isFinite(price) || price < 0) {
+        showMessage("Please enter a valid unit price.", "error");
+        return;
+      }
+
+      /*
+      Prevent accidental duplicates:
+      same date + item + same subitem.
+      The same item with a different subitem is allowed.
+      */
+
+      const existing = cart.some(row =>
+        row.entry_date === date &&
+        row.item_name.toLowerCase() === itemName.toLowerCase() &&
+        (row.subitem || "").toLowerCase() === subitem.toLowerCase()
+      );
+
+      if (existing) {
+        showMessage(
+          "This item with the same subitem is already in the cart. Use a different subitem if it is a separate purchase.",
+          "error"
+        );
+        return;
+      }
+
+      cart.push({
+        entry_date: date,
+        item_name: itemName,
+        subitem: subitem,
+        qty: qty,
+        units: units,
+        price: price
+      });
+
+      renderCart();
+
+      $("itemName").value = "";
+      $("subitem").value = "";
+      $("quantity").value = "";
+      $("price").value = "";
+      setDefaultUnit();
+
+      showMessage("Item added to the purchase cart.");
+    });
+
+    $("purchaseForm").addEventListener("reset", () => {
+      setTimeout(setDefaultUnit, 0);
+    });
+
+    $("cartBody").addEventListener("click", event => {
+      const button = event.target.closest("[data-delete-index]");
+      if (!button) return;
+
+      const index = Number(button.dataset.deleteIndex);
+
+      if (!Number.isInteger(index) || index < 0 || index >= cart.length) {
+        return;
+      }
+
+      const removedItem = cart[index].item_name;
+      cart.splice(index, 1);
+      renderCart();
+
+      showMessage(removedItem + " removed from the cart.");
+    });
+
+    $("clearCartBtn").addEventListener("click", () => {
+      if (cart.length === 0) {
+        showMessage("The cart is already empty.");
+        return;
+      }
+
+      if (!confirm("Remove all items from the current cart?")) return;
+
+      cart = [];
+      renderCart();
+      showMessage("Cart cleared.");
+    });
+
+    $("savePurchasesBtn").addEventListener("click", () => {
+      clearMessage();
+
+      if (cart.length === 0) {
+        showMessage("Add at least one item before saving.", "error");
+        return;
+      }
+
+      const date = getSelectedDate();
+
+      if (!date) {
+        showMessage("Please select a purchase date.", "error");
+        return;
+      }
+
+      if (!confirm("Save " + cart.length + " cart item(s) for " + date + "?")) {
+        return;
+      }
+
+      if (!savedDays[date]) {
+        savedDays[date] = [];
+      }
+
+      /*
+      Save cart records under the selected date.
+      Saved records remain in browser storage until cleared by the browser.
+      */
+
+      savedDays[date].push(...cart.map(item => ({ ...item })));
+
+      persistSavedDays();
+
+      cart = [];
+      persistCart();
+
+      renderCart();
+      renderSavedDates();
+
+      $("savedDate").value = date;
+      renderSavedDate(date);
+
+      showMessage("Purchases saved in this browser for " + date + ".");
+    });
+
+    $("viewSavedBtn").addEventListener("click", () => {
+      renderSavedDate($("savedDate").value);
+    });
+
+    $("savedDate").addEventListener("change", () => {
+      renderSavedDate($("savedDate").value);
+    });
+
+    function csvCell(value) {
+      const text = String(value ?? "");
+      return '"' + text.replace(/"/g, '""') + '"';
+    }
+
+    function downloadCSV(filename, rows) {
+      if (rows.length === 0) {
+        showMessage("There are no records to export.", "error");
+        return;
+      }
+
+      const headers = [
+        "Purchase Date",
+        "Item Name",
+        "Subitem",
+        "Quantity",
+        "Units",
+        "Price Per Unit",
+        "Total Amount"
+      ];
+
+      const csvRows = [
+        headers.map(csvCell).join(","),
+        ...rows.map(item => [
+          item.entry_date,
+          item.item_name,
+          item.subitem || "",
+          item.qty,
+          item.units,
+          Number(item.price).toFixed(2),
+          (Number(item.qty) * Number(item.price)).toFixed(2)
+        ].map(csvCell).join(","))
+      ];
+
+      const blob = new Blob(
+        ["\uFEFF" + csvRows.join("\r\n")],
+        { type: "text/csv;charset=utf-8;" }
+      );
+
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      link.href = url; link.download = "wah-chaat-inventory.csv"; link.click();
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
       URL.revokeObjectURL(url);
-      showToast("CSV export downloaded.");
+
+      showMessage("CSV export started.");
+    }
+
+    $("exportCartBtn").addEventListener("click", () => {
+      downloadCSV(
+        "wah-chaat-cart-" + (getSelectedDate() || todayString()) + ".csv",
+        cart
+      );
     });
-    renderEntries();
-    updatePreview();
+
+    $("exportSavedBtn").addEventListener("click", () => {
+      const allRows = [];
+
+      Object.keys(savedDays).sort().forEach(date => {
+        savedDays[date].forEach(item => {
+          allRows.push({ ...item, entry_date: date });
+        });
+      });
+
+      downloadCSV("wah-chaat-all-saved-purchases.csv", allRows);
+    });
   </script>
 </body>
 </html>
