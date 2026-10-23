@@ -13,9 +13,8 @@
       --black: #171717;
       --grey: #666;
       --border: #e5e5e5;
-      --white: #ffffff;
+      --white: #fff;
       --red: #d93025;
-      --green: #218838;
     }
 
     * {
@@ -53,21 +52,19 @@
     .page-header h1 {
       margin: 0 0 6px;
       font-size: 28px;
-      letter-spacing: -0.5px;
     }
 
     .page-header p {
       margin: 0;
       color: var(--grey);
-      line-height: 1.5;
     }
 
-    .today-label {
-      padding: 10px 14px;
+    .today-label,
+    .section-tag {
+      padding: 8px 12px;
       background: var(--yellow-light);
-      border-radius: 8px;
+      border-radius: 7px;
       font-weight: 700;
-      white-space: nowrap;
     }
 
     .workspace {
@@ -86,30 +83,29 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.025);
     }
 
-    .panel-heading {
+    .panel-heading,
+    .saved-toolbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
       margin-bottom: 20px;
     }
 
-    .panel-heading h2 {
+    .panel-heading h2,
+    .saved-toolbar h2 {
       margin: 0;
       font-size: 19px;
     }
 
     .section-tag {
-      padding: 6px 10px;
-      background: var(--yellow-light);
-      border-radius: 6px;
       font-size: 12px;
-      font-weight: 700;
     }
 
     .form-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
     }
 
@@ -129,7 +125,6 @@
 
     input,
     select {
-      display: block;
       width: 100%;
       min-width: 0;
       height: 43px;
@@ -138,8 +133,7 @@
       border: 1px solid #d7d7d7;
       border-radius: 7px;
       color: var(--black);
-      font-family: inherit;
-      font-size: 14px;
+      font: inherit;
     }
 
     input:focus,
@@ -152,16 +146,12 @@
       background: #f4f4f4;
     }
 
-    .unit-display {
+    .unit-display,
+    .footer-note {
       margin-top: 7px;
       color: var(--grey);
       font-size: 12px;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 22px;
+      line-height: 1.6;
     }
 
     button {
@@ -169,11 +159,9 @@
       padding: 11px 16px;
       border: 0;
       border-radius: 7px;
-      font-family: inherit;
-      font-size: 14px;
+      font: inherit;
       font-weight: 700;
       cursor: pointer;
-      transition: opacity 0.15s ease;
     }
 
     button:hover {
@@ -191,16 +179,8 @@
     }
 
     .btn-secondary {
-      background: #eeeeee;
+      background: #eee;
       color: var(--black);
-    }
-
-    .btn-danger {
-      min-height: 32px;
-      padding: 7px 10px;
-      background: #fff0ef;
-      color: var(--red);
-      font-size: 12px;
     }
 
     .btn-save {
@@ -208,10 +188,29 @@
       color: var(--white);
     }
 
-    .cart-table-wrap,
-    .table-wrap {
+    .btn-danger {
+      min-height: 30px;
+      padding: 6px 8px;
+      background: #fff0ef;
+      color: var(--red);
+      font-size: 12px;
+    }
+
+    .form-actions,
+    .cart-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* Purchase cart: vertical scrolling only */
+    .cart-table-wrap {
       width: 100%;
-      overflow-x: auto;
+      max-height: 340px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-gutter: stable;
     }
 
     table {
@@ -220,36 +219,43 @@
       text-align: left;
     }
 
-    th {
-      padding: 12px 10px;
-      background: #faf7e9;
-      border-bottom: 1px solid var(--border);
-      font-size: 12px;
-      white-space: nowrap;
+    .cart-table {
+      table-layout: fixed;
     }
 
-    td {
-      padding: 13px 10px;
-      border-bottom: 1px solid #eeeeee;
-      vertical-align: middle;
-    }
-
-    td,
-    th {
+    .cart-table th,
+    .cart-table td {
+      padding: 11px 5px;
       overflow-wrap: anywhere;
     }
 
-    .cart-table {
-      min-width: 430px;
+    .cart-table th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #faf7e9;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
     }
 
-    .saved-table {
-      min-width: 650px;
+    .cart-table td {
+      border-bottom: 1px solid #eee;
+      vertical-align: middle;
     }
+
+    .cart-table th:nth-child(1) { width: 34%; }
+    .cart-table th:nth-child(2) { width: 20%; }
+    .cart-table th:nth-child(3) { width: 24%; }
+    .cart-table th:nth-child(4) { width: 22%; }
 
     .number {
       text-align: right;
       white-space: nowrap;
+    }
+
+    .cart-table .number {
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
 
     .delete-cell {
@@ -282,43 +288,44 @@
       line-height: 1.6;
     }
 
-    .cart-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
     .saved-section {
       margin-top: 24px;
-    }
-
-    .saved-toolbar {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 18px;
-    }
-
-    .saved-toolbar h2 {
-      margin: 0;
-      font-size: 19px;
     }
 
     .date-filter {
       width: 210px;
     }
 
+    .saved-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .saved-table {
+      min-width: 480px;
+    }
+
+    .saved-table th {
+      padding: 12px 10px;
+      background: #faf7e9;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .saved-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #eee;
+      overflow-wrap: anywhere;
+    }
+
     .saved-total {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
       margin-top: 16px;
       padding: 14px 12px;
       background: #f7f7f7;
       border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
       font-weight: 700;
     }
 
@@ -342,13 +349,6 @@
       color: #a32018;
     }
 
-    .footer-note {
-      margin: 18px 0 0;
-      color: var(--grey);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
     @media (max-width: 850px) {
       .workspace {
         grid-template-columns: minmax(0, 1fr);
@@ -356,6 +356,11 @@
 
       .container {
         padding: 16px;
+      }
+
+      .cart-table th,
+      .cart-table td {
+        padding: 12px 8px;
       }
     }
 
@@ -366,7 +371,7 @@
 
       .page-header,
       .panel {
-        padding: 16px;
+        padding: 15px;
       }
 
       .page-header h1 {
@@ -385,10 +390,6 @@
         width: 100%;
       }
 
-      .saved-toolbar {
-        align-items: stretch;
-      }
-
       .form-actions,
       .cart-actions {
         flex-direction: column;
@@ -397,6 +398,17 @@
       .form-actions button,
       .cart-actions button {
         width: 100%;
+      }
+
+      .cart-table th,
+      .cart-table td {
+        padding: 10px 3px;
+        font-size: 12px;
+      }
+
+      .cart-table .btn-danger {
+        padding: 6px 4px;
+        font-size: 11px;
       }
     }
   </style>
@@ -410,7 +422,6 @@
         <h1>Wah! Chaat</h1>
         <p>Purchase Inventory Management</p>
       </div>
-
       <div class="today-label" id="todayLabel"></div>
     </header>
 
@@ -456,15 +467,19 @@
             </div>
 
             <div class="field full-width">
-              <label for="price">Price per Unit (₹)</label>
+              <label for="price">Actual Price (₹)</label>
               <input
                 id="price"
                 type="number"
                 min="0"
                 step="0.01"
-                placeholder="Enter price per unit"
+                placeholder="Enter total price for this entry"
                 required
               >
+              <div class="unit-display">
+                Enter the actual total price for this purchase entry.
+                Do not enter a per-unit price.
+              </div>
             </div>
 
           </div>
@@ -478,11 +493,6 @@
             </button>
           </div>
         </form>
-
-        <p class="footer-note">
-          Enter the item, quantity and price per unit. The item unit
-          is filled automatically.
-        </p>
       </section>
 
       <!-- PURCHASE CART -->
@@ -498,7 +508,7 @@
               <tr>
                 <th>Item Name</th>
                 <th class="number">Quantity</th>
-                <th class="number">Price/Unit</th>
+                <th class="number">Price</th>
                 <th class="delete-cell">Delete</th>
               </tr>
             </thead>
@@ -517,19 +527,13 @@
         </div>
 
         <div class="cart-actions">
-          <button
-            class="btn-save"
-            id="savePurchasesBtn"
-            type="button"
-            disabled
-          >
+          <button class="btn-save" id="savePurchasesBtn" type="button" disabled>
             Save Today's Purchases
           </button>
         </div>
 
         <p class="footer-note">
-          Total Amount is calculated as Quantity × Price/Unit for
-          all items currently in the cart.
+          Total Amount is the sum of the actual prices entered for all cart items.
         </p>
       </section>
 
@@ -548,15 +552,14 @@
         </div>
       </div>
 
-      <div class="table-wrap" id="savedTableWrap">
+      <div class="saved-table-wrap" id="savedTableWrap">
         <table class="saved-table">
           <thead>
             <tr>
               <th>Item Name</th>
               <th class="number">Quantity</th>
               <th>Unit</th>
-              <th class="number">Price/Unit</th>
-              <th class="number">Total Amount</th>
+              <th class="number">Price</th>
             </tr>
           </thead>
           <tbody id="savedBody"></tbody>
@@ -579,9 +582,8 @@
       </div>
 
       <p class="footer-note">
-        The saved purchases table and CSV contain Item Name, Quantity,
-        Unit, Price/Unit and Total Amount. Purchase Date and Subitem
-        are not displayed or exported as columns.
+        Saved Purchases and CSV show Item Name, Quantity, Unit and actual Price.
+        The total amount is shown separately.
       </p>
     </section>
 
@@ -590,11 +592,7 @@
   <script>
     "use strict";
 
-    // --------------------------------------------------
-    // ITEM CATALOG
-    // Add or edit your items and their default units here.
-    // --------------------------------------------------
-
+    // Item catalog: edit or add items here.
     const itemCatalog = [
       { name: "Atta", unit: "Kg" },
       { name: "Besan", unit: "Kg" },
@@ -612,11 +610,9 @@
       { name: "Tomatoes", unit: "Kg" }
     ];
 
-    itemCatalog.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+    itemCatalog.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Existing browser storage keys are retained.
+    // Keep existing storage keys so previously saved browser data remains available.
     const CART_KEY = "wah_chaat_cart_v4";
     const SAVED_KEY = "wah_chaat_saved_days_v4";
 
@@ -625,21 +621,12 @@
     let cart = loadStorage(CART_KEY, []);
     let savedDays = loadStorage(SAVED_KEY, {});
 
-    // --------------------------------------------------
-    // COMMON FUNCTIONS
-    // --------------------------------------------------
-
     function loadStorage(key, fallback) {
       try {
         const raw = localStorage.getItem(key);
-
-        if (raw === null) {
-          return fallback;
-        }
-
-        return JSON.parse(raw);
+        return raw === null ? fallback : JSON.parse(raw);
       } catch (error) {
-        console.error("Could not read saved browser data:", error);
+        console.error("Could not read browser data:", error);
         return fallback;
       }
     }
@@ -650,10 +637,7 @@
         return true;
       } catch (error) {
         console.error("Could not save browser data:", error);
-        showNotice(
-          "Could not save data in this browser. Check browser storage settings.",
-          "error"
-        );
+        showNotice("Could not save data in this browser.", "error");
         return false;
       }
     }
@@ -662,21 +646,14 @@
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const day = String(date.getDate()).padStart(2, "0");
-
       return `${year}-${month}-${day}`;
     }
 
     function formatDate(dateString) {
-      if (!dateString) {
-        return "";
-      }
-
       const parts = dateString.split("-");
-      if (parts.length !== 3) {
-        return dateString;
-      }
-
-      return `${parts[2]}.${parts[1]}.${parts[0]}`;
+      return parts.length === 3
+        ? `${parts[2]}.${parts[1]}.${parts[0]}`
+        : dateString;
     }
 
     function money(value) {
@@ -687,27 +664,21 @@
     }
 
     function escapeHtml(value) {
-      return String(value ?? "").replace(/[&<>"']/g, (character) => {
-        const replacements = {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#039;"
-        };
-
-        return replacements[character];
-      });
+      return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[character]);
     }
 
     function showNotice(message, type = "success") {
       const notice = $("notice");
-
       notice.textContent = message;
       notice.className = "notice " + type;
 
       window.clearTimeout(showNotice.timeoutId);
-
       showNotice.timeoutId = window.setTimeout(() => {
         notice.className = "notice";
         notice.textContent = "";
@@ -716,17 +687,14 @@
 
     function getTodaysCart() {
       const today = localDateString();
-
       return cart.filter((entry) => entry.entry_date === today);
     }
 
+    // Price is the actual total price for the entry.
+    // It must NOT be multiplied by quantity.
     function lineTotal(entry) {
-      return Number(entry.qty || 0) * Number(entry.price || 0);
+      return Number(entry.price || 0);
     }
-
-    // --------------------------------------------------
-    // INITIALIZE THE PAGE
-    // --------------------------------------------------
 
     function initializePage() {
       $("todayLabel").textContent =
@@ -754,17 +722,13 @@
       });
     }
 
-    // --------------------------------------------------
-    // ENTRY SHEET
-    // --------------------------------------------------
-
+    // Entry sheet unit selection.
     $("itemName").addEventListener("change", function () {
       const selectedItem = itemCatalog.find(
         (item) => item.name === this.value
       );
 
       $("unit").value = selectedItem ? selectedItem.unit : "";
-
       $("unitDisplay").textContent = selectedItem
         ? "Default unit: " + selectedItem.unit
         : "Select an item to see its unit.";
@@ -778,6 +742,7 @@
       }, 0);
     });
 
+    // Add entry to cart.
     $("purchaseForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
@@ -811,8 +776,6 @@
         qty: quantity,
         unit: selectedItem.unit,
         price: price,
-
-        // Kept internally, not shown as a table column.
         entry_date: localDateString(),
         subitem: ""
       };
@@ -825,17 +788,13 @@
       }
 
       renderCart();
-
       $("purchaseForm").reset();
       $("itemName").focus();
 
       showNotice("Item added to the purchase cart.");
     });
 
-    // --------------------------------------------------
-    // PURCHASE CART
-    // --------------------------------------------------
-
+    // Render cart with vertical scrolling and no horizontal scrolling.
     function renderCart() {
       const todaysCart = getTodaysCart();
       const body = $("cartBody");
@@ -862,38 +821,30 @@
         body.appendChild(row);
       });
 
+      // Sum actual prices; do not multiply by quantity.
       const totalAmount = todaysCart.reduce(
         (sum, entry) => sum + lineTotal(entry),
         0
       );
 
       $("cartTotalAmount").textContent = money(totalAmount);
-
-      $("cartTotal").style.display =
-        todaysCart.length ? "flex" : "none";
-
-      $("cartEmpty").style.display =
-        todaysCart.length ? "none" : "block";
-
-      $("cartTableWrap").style.display =
-        todaysCart.length ? "block" : "none";
-
+      $("cartTotal").style.display = todaysCart.length ? "flex" : "none";
+      $("cartEmpty").style.display = todaysCart.length ? "none" : "block";
+      $("cartTableWrap").style.display = todaysCart.length ? "block" : "none";
       $("savePurchasesBtn").disabled = todaysCart.length === 0;
     }
 
     $("cartBody").addEventListener("click", function (event) {
       const button = event.target.closest("[data-delete-id]");
+      if (!button) return;
 
-      if (!button) {
-        return;
-      }
-
+      const oldCart = cart;
       const id = button.dataset.deleteId;
 
       cart = cart.filter((entry) => entry.id !== id);
 
       if (!saveStorage(CART_KEY, cart)) {
-        cart = loadStorage(CART_KEY, []);
+        cart = oldCart;
         renderCart();
         return;
       }
@@ -902,10 +853,7 @@
       showNotice("Item deleted from the purchase cart.");
     });
 
-    // --------------------------------------------------
-    // SAVE TODAY'S PURCHASES
-    // --------------------------------------------------
-
+    // Save today's cart into saved purchases.
     $("savePurchasesBtn").addEventListener("click", function () {
       const today = localDateString();
       const todaysCart = getTodaysCart();
@@ -915,7 +863,7 @@
         return;
       }
 
-      const existingDay = savedDays[today] || [];
+      const previousDayEntries = savedDays[today] || [];
 
       const entriesToSave = todaysCart.map((entry) => ({
         item: entry.item,
@@ -925,22 +873,19 @@
         subitem: ""
       }));
 
-      // Keep existing saved entries and append today's cart entries.
-      savedDays[today] = existingDay.concat(entriesToSave);
+      savedDays[today] = previousDayEntries.concat(entriesToSave);
 
       if (!saveStorage(SAVED_KEY, savedDays)) {
-        savedDays[today] = existingDay;
+        savedDays[today] = previousDayEntries;
         return;
       }
 
-      // Remove today's entries from the cart after saving.
+      const previousCart = cart;
       cart = cart.filter((entry) => entry.entry_date !== today);
 
       if (!saveStorage(CART_KEY, cart)) {
-        // Restore the cart if the cart update could not be saved.
-        cart = cart.concat(todaysCart);
-        savedDays[today] = existingDay;
-
+        cart = previousCart;
+        savedDays[today] = previousDayEntries;
         saveStorage(SAVED_KEY, savedDays);
         renderCart();
 
@@ -955,10 +900,7 @@
       showNotice("Today's purchases saved successfully.");
     });
 
-    // --------------------------------------------------
-    // SAVED PURCHASES DATE FILTER
-    // --------------------------------------------------
-
+    // Saved purchase date dropdown.
     function refreshSavedDateDropdown(preferredDate) {
       const select = $("savedDate");
       const previousDate = preferredDate || select.value;
@@ -987,41 +929,30 @@
         select.appendChild(option);
       });
 
-      if (dates.includes(previousDate)) {
-        select.value = previousDate;
-      } else {
-        select.value = dates[0];
-      }
+      select.value = dates.includes(previousDate) ? previousDate : dates[0];
     }
 
-    $("savedDate").addEventListener("change", function () {
-      renderSavedPurchases();
-    });
+    $("savedDate").addEventListener("change", renderSavedPurchases);
 
-    // --------------------------------------------------
-    // SAVED PURCHASES TABLE
-    // --------------------------------------------------
-
+    // Saved purchases table and total.
     function renderSavedPurchases() {
       const selectedDate = $("savedDate").value;
+
       const entries = selectedDate && Array.isArray(savedDays[selectedDate])
         ? savedDays[selectedDate]
         : [];
 
       const body = $("savedBody");
-
       body.innerHTML = "";
 
       entries.forEach((entry) => {
         const row = document.createElement("tr");
-        const total = lineTotal(entry);
 
         row.innerHTML = `
           <td>${escapeHtml(entry.item)}</td>
           <td class="number">${escapeHtml(entry.qty)}</td>
           <td>${escapeHtml(entry.unit)}</td>
           <td class="number">${money(entry.price)}</td>
-          <td class="number">${money(total)}</td>
         `;
 
         body.appendChild(row);
@@ -1033,26 +964,17 @@
       );
 
       $("savedTotalAmount").textContent = money(totalAmount);
-
-      $("savedTotal").style.display =
-        entries.length ? "flex" : "none";
-
-      $("savedEmpty").style.display =
-        entries.length ? "none" : "block";
-
-      $("savedTableWrap").style.display =
-        entries.length ? "block" : "none";
-
+      $("savedTotal").style.display = entries.length ? "flex" : "none";
+      $("savedEmpty").style.display = entries.length ? "none" : "block";
+      $("savedTableWrap").style.display = entries.length ? "block" : "none";
       $("exportSavedBtn").disabled = entries.length === 0;
     }
 
-    // --------------------------------------------------
-    // EXPORT SAVED PURCHASES TO CSV
-    // Purchase date and subitem are intentionally excluded.
-    // --------------------------------------------------
-
+    // Export saved purchases to CSV.
+    // Price is the actual entered amount for each entry.
     $("exportSavedBtn").addEventListener("click", function () {
       const selectedDate = $("savedDate").value;
+
       const entries = selectedDate && Array.isArray(savedDays[selectedDate])
         ? savedDays[selectedDate]
         : [];
@@ -1063,13 +985,7 @@
       }
 
       const rows = [
-        [
-          "Item Name",
-          "Quantity",
-          "Unit",
-          "Price Per Unit",
-          "Total Amount"
-        ]
+        ["Item Name", "Quantity", "Unit", "Price"]
       ];
 
       entries.forEach((entry) => {
@@ -1077,18 +993,15 @@
           entry.item,
           entry.qty,
           entry.unit,
-          Number(entry.price).toFixed(2),
-          lineTotal(entry).toFixed(2)
+          Number(entry.price).toFixed(2)
         ]);
       });
 
       const csvContent = rows
-        .map((row) =>
-          row.map((value) => {
-            const text = String(value ?? "");
-            return '"' + text.replace(/"/g, '""') + '"';
-          }).join(",")
-        )
+        .map((row) => row.map((value) => {
+          const text = String(value ?? "");
+          return '"' + text.replace(/"/g, '""') + '"';
+        }).join(","))
         .join("\r\n");
 
       const blob = new Blob(
@@ -1101,20 +1014,15 @@
 
       link.href = url;
       link.download = "Wah_Chaat_Purchases_" +
-        (selectedDate || localDateString()) + ".csv";
+        selectedDate + ".csv";
 
       document.body.appendChild(link);
       link.click();
       link.remove();
 
       URL.revokeObjectURL(url);
-
       showNotice("Saved purchases CSV exported.");
     });
-
-    // --------------------------------------------------
-    // START APPLICATION
-    // --------------------------------------------------
 
     initializePage();
   </script>
