@@ -710,7 +710,7 @@
       showNotice.timeoutId = window.setTimeout(() => {
         notice.className = "notice";
         notice.textContent = "";
-      }, 4000);
+      }, type === "error" ? 12000 : 4000);
     }
 
     function getTodaysCart() {
@@ -765,7 +765,9 @@
           databaseReady = false;
           refreshSavedDateDropdown();
           renderSavedPurchases();
-          showNotice("Could not load purchases from Supabase. Check table permissions and RLS policies.", "error");
+          const detail = [error.message, error.code ? "Code: " + error.code : "", error.details || "", error.hint || ""]
+            .filter(Boolean).join(" | ");
+          showNotice("Could not load purchases from Supabase: " + (detail || "Unknown error"), "error");
           return;
         }
 
@@ -1004,7 +1006,9 @@
       if (error) {
         console.error("Supabase insert error:", error);
         renderCart();
-        showNotice("Save failed. Your cart is still available. Check Supabase RLS/table permissions.", "error");
+        const detail = [error.message, error.code ? "Code: " + error.code : "", error.details || "", error.hint || ""]
+          .filter(Boolean).join(" | ");
+        showNotice("Save failed; your cart is still available. " + (detail || "Unknown Supabase error"), "error");
         return;
       }
 
