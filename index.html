@@ -103,6 +103,22 @@
       font-size: 12px;
     }
 
+    /* Highlight the numbered section headings */
+    .section-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      margin-right: 7px;
+      background: var(--yellow);
+      border: 1px solid #e0ad00;
+      border-radius: 7px;
+      font-size: 15px;
+      font-weight: 800;
+      vertical-align: middle;
+    }
+
     .form-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -432,7 +448,7 @@
       <!-- ENTRY SHEET -->
       <section class="panel">
         <div class="panel-heading">
-          <h2>1. Entry Sheet</h2>
+          <h2><span class="section-number">1</span>Entry Sheet</h2>
           <span class="section-tag">New Purchase</span>
         </div>
 
@@ -489,7 +505,7 @@
               Add to Purchase Cart
             </button>
             <button class="btn-secondary" type="reset">
-              Clear Cart
+              Clear Entry
             </button>
           </div>
         </form>
@@ -498,7 +514,7 @@
       <!-- PURCHASE CART -->
       <section class="panel">
         <div class="panel-heading">
-          <h2>2. Purchase Cart</h2>
+          <h2><span class="section-number">2</span>Purchase Cart</h2>
           <span class="section-tag">Today's Entries</span>
         </div>
 
@@ -530,8 +546,8 @@
           <button class="btn-save" id="savePurchasesBtn" type="button" disabled>
             Save Today's Purchases
           </button>
-          <button class="btn-secondary" type="reset">
-              Clear Entry
+          <button class="btn-secondary" id="clearCartBtn" type="button" disabled>
+            Clear Cart
           </button>
         </div>
 
@@ -545,7 +561,7 @@
     <!-- SAVED PURCHASES -->
     <section class="panel saved-section">
       <div class="saved-toolbar">
-        <h2>3. Saved Purchases</h2>
+        <h2><span class="section-number">3</span>Saved Purchases</h2>
 
         <div class="field date-filter">
           <label for="savedDate">Select Purchase Date</label>
@@ -835,6 +851,7 @@
       $("cartEmpty").style.display = todaysCart.length ? "none" : "block";
       $("cartTableWrap").style.display = todaysCart.length ? "block" : "none";
       $("savePurchasesBtn").disabled = todaysCart.length === 0;
+      $("clearCartBtn").disabled = todaysCart.length === 0;
     }
 
     $("cartBody").addEventListener("click", function (event) {
@@ -854,6 +871,33 @@
 
       renderCart();
       showNotice("Item deleted from the purchase cart.");
+    });
+
+    // Clear only today's cart entries; saved purchases remain unchanged.
+    $("clearCartBtn").addEventListener("click", function () {
+      const todaysCart = getTodaysCart();
+
+      if (todaysCart.length === 0) {
+        showNotice("The purchase cart is already empty.", "error");
+        return;
+      }
+
+      if (!confirm("Are you sure you want to clear today's purchase cart?")) {
+        return;
+      }
+
+      const previousCart = cart;
+      const today = localDateString();
+      cart = cart.filter((entry) => entry.entry_date !== today);
+
+      if (!saveStorage(CART_KEY, cart)) {
+        cart = previousCart;
+        renderCart();
+        return;
+      }
+
+      renderCart();
+      showNotice("Today's purchase cart cleared successfully.");
     });
 
     // Save today's cart into saved purchases.
