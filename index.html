@@ -103,22 +103,6 @@
       font-size: 12px;
     }
 
-    /* Highlight the numbered section headings */
-    .section-number {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-      margin-right: 7px;
-      background: var(--yellow);
-      border: 1px solid #e0ad00;
-      border-radius: 7px;
-      font-size: 15px;
-      font-weight: 800;
-      vertical-align: middle;
-    }
-
     .form-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -448,7 +432,7 @@
       <!-- ENTRY SHEET -->
       <section class="panel">
         <div class="panel-heading">
-          <h2><span class="section-number">1</span>Entry Sheet</h2>
+          <h2>1. Entry Sheet</h2>
           <span class="section-tag">New Purchase</span>
         </div>
 
@@ -514,7 +498,7 @@
       <!-- PURCHASE CART -->
       <section class="panel">
         <div class="panel-heading">
-          <h2><span class="section-number">2</span>Purchase Cart</h2>
+          <h2>2. Purchase Cart</h2>
           <span class="section-tag">Today's Entries</span>
         </div>
 
@@ -546,8 +530,8 @@
           <button class="btn-save" id="savePurchasesBtn" type="button" disabled>
             Save Today's Purchases
           </button>
-          <button class="btn-secondary" id="clearCartBtn" type="button" disabled>
-            Clear Cart
+          <button class="btn-secondary" id="clearCartBtn" type="button">
+              Clear Cart
           </button>
         </div>
 
@@ -561,7 +545,7 @@
     <!-- SAVED PURCHASES -->
     <section class="panel saved-section">
       <div class="saved-toolbar">
-        <h2><span class="section-number">3</span>Saved Purchases</h2>
+        <h2>3. Saved Purchases</h2>
 
         <div class="field date-filter">
           <label for="savedDate">Select Purchase Date</label>
@@ -632,22 +616,22 @@
 
     itemCatalog.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Supabase connection details. The publishable key is intended for browser use.
-    // Database Row Level Security (RLS) must be enabled and configured in Supabase.
+    // Keep existing storage keys so previously saved browser data remains available.
+    const CART_KEY = "wah_chaat_cart_v4";
+    const SAVED_KEY = "wah_chaat_saved_days_v4";
+
+    // Supabase project connection. Publishable keys are intended for browser use;
+    // table access must still be protected with appropriate RLS policies.
     const SUPABASE_URL = "https://sgkylfvtvpmebalmrfxu.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_8s-cpoN24jsiF_PtNW7q8w_m7O4eiul";
-    const supabaseClient = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
+    const supabaseClient = window.supabase
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+      : null;
 
-    // The unsaved cart stays in this browser; saved purchases are stored in Supabase.
-    const CART_KEY = "wah_chaat_cart_v4";
     const $ = (id) => document.getElementById(id);
 
     let cart = loadStorage(CART_KEY, []);
-    let savedDays = {};
-    let databaseReady = false;
+    let savedDays = loadStorage(SAVED_KEY, {});
 
     function loadStorage(key, fallback) {
       try {
@@ -710,7 +694,7 @@
       showNotice.timeoutId = window.setTimeout(() => {
         notice.className = "notice";
         notice.textContent = "";
-      }, type === "error" ? 12000 : 4000);
+      }, 4000);
     }
 
     function getTodaysCart() {
@@ -736,65 +720,42 @@
       populateItemDropdown();
       renderCart();
       await loadSavedPurchasesFromSupabase();
+      refreshSavedDateDropdown();
+      renderSavedPurchases();
     }
 
-    // Read active saved purchases from Supabase table tbwcinv.
-    async function loadSavedPurchasesFromSupabase(preferredDate) {
-      const body = $("savedBody");
-      body.innerHTML = "";
-      $("savedEmpty").textContent = "Loading saved purchases...";
-      $("savedEmpty").style.display = "block";
-      $("savedTableWrap").style.display = "none";
+    async function loadSavedPurchasesFromSupabase() {
+      if (!supabaseClient) {
+        showNotice("Supabase library did not load. Check your internet connection and refresh.", "error");
+        return;
+      }
 
-      let allRecords = [];
-      let from = 0;
-      const pageSize = 1000;
+      const { data, error } = await supabaseClient
+        .from("tbwcinv")
+        .select("entry_id, entry_date, item_name, subitem, qty, units, price, entry_time, is_deleted")
+        .eq("is_deleted", false)
+        .order("entry_date", { ascending: false });
 
-      while (true) {
-        const { data, error } = await supabaseClient
-          .from("tbwcinv")
-          .select("entry_id, entry_date, item_name, subitem, qty, units, price, entry_time, is_deleted")
-          .eq("is_deleted", false)
-          .order("entry_date", { ascending: false })
-          .order("entry_id", { ascending: false })
-          .range(from, from + pageSize - 1);
-
-        if (error) {
-          console.error("Supabase load error:", error);
-          savedDays = {};
-          databaseReady = false;
-          refreshSavedDateDropdown();
-          renderSavedPurchases();
-          const detail = [error.message, error.code ? "Code: " + error.code : "", error.details || "", error.hint || ""]
-            .filter(Boolean).join(" | ");
-          showNotice("Could not load purchases from Supabase: " + (detail || "Unknown error"), "error");
-          return;
-        }
-
-        allRecords = allRecords.concat(data || []);
-        if (!data || data.length < pageSize) break;
-        from += pageSize;
+      if (error) {
+        console.error("Supabase load failed:", error);
+        showNotice("Unable to load Supabase purchases: " + error.message + " | Code: " + (error.code || "N/A"), "error");
+        return;
       }
 
       savedDays = {};
-      allRecords.forEach((record) => {
-        const date = String(record.entry_date || "").slice(0, 10);
+      (data || []).forEach((row) => {
+        const date = String(row.entry_date || "").slice(0, 10);
         if (!date) return;
         if (!savedDays[date]) savedDays[date] = [];
         savedDays[date].push({
-          id: record.entry_id,
-          item: record.item_name,
-          qty: Number(record.qty || 0),
-          unit: record.units || "",
-          price: Number(record.price || 0),
-          subitem: record.subitem || "",
-          entry_time: record.entry_time || ""
+          item: row.item_name || "",
+          qty: Number(row.qty || 0),
+          unit: row.units || "",
+          price: Number(row.price || 0),
+          subitem: row.subitem
         });
       });
-
-      databaseReady = true;
-      refreshSavedDateDropdown(preferredDate);
-      renderSavedPurchases();
+      saveStorage(SAVED_KEY, savedDays);
     }
 
     function populateItemDropdown() {
@@ -918,7 +879,6 @@
       $("cartEmpty").style.display = todaysCart.length ? "none" : "block";
       $("cartTableWrap").style.display = todaysCart.length ? "block" : "none";
       $("savePurchasesBtn").disabled = todaysCart.length === 0;
-      $("clearCartBtn").disabled = todaysCart.length === 0;
     }
 
     $("cartBody").addEventListener("click", function (event) {
@@ -940,34 +900,7 @@
       showNotice("Item deleted from the purchase cart.");
     });
 
-    // Clear only today's cart entries; saved purchases remain unchanged.
-    $("clearCartBtn").addEventListener("click", function () {
-      const todaysCart = getTodaysCart();
-
-      if (todaysCart.length === 0) {
-        showNotice("The purchase cart is already empty.", "error");
-        return;
-      }
-
-      if (!confirm("Are you sure you want to clear today's purchase cart?")) {
-        return;
-      }
-
-      const previousCart = cart;
-      const today = localDateString();
-      cart = cart.filter((entry) => entry.entry_date !== today);
-
-      if (!saveStorage(CART_KEY, cart)) {
-        cart = previousCart;
-        renderCart();
-        return;
-      }
-
-      renderCart();
-      showNotice("Today's purchase cart cleared successfully.");
-    });
-
-    // Save today's cart to Supabase. The cart is cleared only after the insert succeeds.
+    // Save today's cart to Supabase. Keep the cart if the insert fails.
     $("savePurchasesBtn").addEventListener("click", async function () {
       const today = localDateString();
       const todaysCart = getTodaysCart();
@@ -976,49 +909,76 @@
         showNotice("There are no items to save.", "error");
         return;
       }
-      if (!databaseReady) {
-        showNotice("Supabase is not ready. Check the connection and table permissions.", "error");
+      if (!supabaseClient) {
+        showNotice("Supabase library did not load. Refresh and try again.", "error");
         return;
       }
-      if (!confirm("Save today's purchase entries to Supabase?")) return;
 
       const now = new Date();
       const entryTime = [now.getHours(), now.getMinutes(), now.getSeconds()]
         .map((part) => String(part).padStart(2, "0")).join(":");
-      const rowsToInsert = todaysCart.map((entry) => ({
-        entry_date: today,
-        item_name: entry.item,
-        subitem: entry.subitem || "",
-        qty: Number(entry.qty),
-        units: entry.unit,
-        price: Number(entry.price),
-        entry_time: entryTime,
-        is_deleted: false
-      }));
+      const rows = todaysCart.map((entry) => {
+        // Build the insert row without sending blank strings to integer columns.
+        // When subitem is empty, omit it so Supabase can apply the column default
+        // (or NULL if the column allows NULL) instead of attempting to cast "".
+        const row = {
+          entry_date: today,
+          item_name: String(entry.item || "").trim(),
+          qty: Number(entry.qty),
+          units: String(entry.unit || "").trim(),
+          price: Number(entry.price),
+          entry_time: entryTime,
+          is_deleted: false
+        };
 
-      const saveButton = $("savePurchasesBtn");
-      saveButton.disabled = true;
-      saveButton.textContent = "Saving...";
+        if (entry.subitem !== "" && entry.subitem != null) {
+          const subitemValue = Number(entry.subitem);
+          if (Number.isInteger(subitemValue)) row.subitem = subitemValue;
+        }
 
-      const { error } = await supabaseClient.from("tbwcinv").insert(rowsToInsert);
+        return row;
+      });
 
-      saveButton.textContent = "Save Today's Purchases";
-      if (error) {
-        console.error("Supabase insert error:", error);
+      const button = $("savePurchasesBtn");
+      button.disabled = true;
+      button.textContent = "Saving...";
+
+      try {
+        const { error } = await supabaseClient.from("tbwcinv").insert(rows);
+        if (error) {
+          console.error("Supabase save failed:", error);
+          showNotice("Save failed; your cart is still available. " + error.message + " | Code: " + (error.code || "N/A"), "error");
+          return;
+        }
+
+        cart = cart.filter((entry) => entry.entry_date !== today);
+        if (!saveStorage(CART_KEY, cart)) return;
+        await loadSavedPurchasesFromSupabase();
+        refreshSavedDateDropdown(today);
         renderCart();
-        const detail = [error.message, error.code ? "Code: " + error.code : "", error.details || "", error.hint || ""]
-          .filter(Boolean).join(" | ");
-        showNotice("Save failed; your cart is still available. " + (detail || "Unknown Supabase error"), "error");
+        renderSavedPurchases();
+        showNotice("Today's purchases saved successfully to Supabase.");
+      } catch (error) {
+        console.error("Unexpected Supabase save error:", error);
+        showNotice("Save failed; your cart is still available. " + (error.message || String(error)), "error");
+      } finally {
+        button.textContent = "Save Today's Purchases";
+        renderCart();
+      }
+    });
+
+    $("clearCartBtn").addEventListener("click", function () {
+      const today = localDateString();
+      if (!getTodaysCart().length) {
+        showNotice("Today's cart is already empty.", "error");
         return;
       }
-
+      if (!window.confirm("Clear all entries from today's purchase cart? Saved purchases will not be deleted.")) return;
       cart = cart.filter((entry) => entry.entry_date !== today);
-      if (!saveStorage(CART_KEY, cart)) {
-        showNotice("Purchases were saved in Supabase, but the local cart could not be updated. Please refresh and verify before saving again.", "error");
+      if (saveStorage(CART_KEY, cart)) {
+        renderCart();
+        showNotice("Today's cart has been cleared.");
       }
-      renderCart();
-      await loadSavedPurchasesFromSupabase(today);
-      showNotice("Today's purchases saved to Supabase successfully.");
     });
 
     // Saved purchase date dropdown.
@@ -1086,7 +1046,6 @@
 
       $("savedTotalAmount").textContent = money(totalAmount);
       $("savedTotal").style.display = entries.length ? "flex" : "none";
-      $("savedEmpty").textContent = "No saved purchases for the selected date.";
       $("savedEmpty").style.display = entries.length ? "none" : "block";
       $("savedTableWrap").style.display = entries.length ? "block" : "none";
       $("exportSavedBtn").disabled = entries.length === 0;
