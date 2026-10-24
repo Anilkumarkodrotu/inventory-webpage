@@ -146,6 +146,37 @@
       background: #f4f4f4;
     }
 
+    .password-input-wrap {
+      position: relative;
+    }
+
+    .password-input-wrap input {
+      padding-right: 48px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      min-height: 34px;
+      padding: 4px;
+      background: transparent;
+      color: #333;
+      border-radius: 6px;
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .password-toggle:focus-visible {
+      outline: 2px solid #d5a900;
+      outline-offset: 1px;
+    }
+
     .unit-display,
     .footer-note {
       margin-top: 7px;
@@ -463,7 +494,10 @@
           </div>
           <div class="field">
             <label for="loginPassword">Password</label>
-            <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Enter your password">
+            <div class="password-input-wrap">
+              <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Enter your password">
+              <button class="password-toggle" type="button" data-toggle-password="loginPassword" aria-label="Show password" title="Show password">👁</button>
+            </div>
           </div>
           <button class="btn-primary" id="loginBtn" type="submit">Log In</button>
         </form>
@@ -1318,6 +1352,18 @@
     // Authentication: inventory operations are available only after sign-in.
     document.querySelectorAll("[data-auth-view]").forEach((button) => {
       button.addEventListener("click", () => setAuthView(button.dataset.authView));
+    });
+
+    document.querySelectorAll("[data-toggle-password]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = $(button.dataset.togglePassword);
+        if (!input) return;
+        const showPassword = input.type === "password";
+        input.type = showPassword ? "text" : "password";
+        button.textContent = showPassword ? "🙈" : "👁";
+        button.setAttribute("aria-label", showPassword ? "Hide password" : "Show password");
+        button.setAttribute("title", showPassword ? "Hide password" : "Show password");
+      });
     });
 
     if (!supabaseClient) {
