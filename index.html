@@ -411,18 +411,134 @@
         font-size: 11px;
       }
     }
+
+
+    /* Supabase authentication screens */
+    .auth-shell {
+      max-width: 460px;
+      margin: 6vh auto;
+      padding: 24px;
+    }
+
+    .auth-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-top: 6px solid var(--yellow);
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .auth-card h1 { margin: 0 0 8px; font-size: 27px; }
+    .auth-card h2 { margin: 0 0 8px; font-size: 21px; }
+    .auth-subtitle { margin: 0 0 24px; color: var(--grey); line-height: 1.5; }
+    .auth-form { display: grid; gap: 16px; }
+    .auth-form .btn-primary { width: 100%; }
+    .auth-links { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 18px; }
+    .auth-link { color: #624b00; text-decoration: underline; cursor: pointer; font: inherit; background: none; border: 0; padding: 0; }
+    .auth-message { display: none; margin-top: 16px; padding: 12px; border-radius: 8px; line-height: 1.45; overflow-wrap: anywhere; }
+    .auth-message.success { display: block; background: #eef8ee; color: #205522; border: 1px solid #b9dfba; }
+    .auth-message.error { display: block; background: #fff0ef; color: #9b1c13; border: 1px solid #f0c0bc; }
+    .auth-userbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    .auth-user-email { color: var(--grey); font-size: 12px; overflow-wrap: anywhere; }
+    .auth-view[hidden], #appContainer[hidden] { display: none !important; }
+    @media (max-width: 520px) {
+      .auth-shell { margin: 2vh auto; padding: 14px; }
+      .auth-card { padding: 22px; }
+    }
+
   </style>
 </head>
 
 <body>
-  <main class="container">
+  <section class="auth-shell" id="authContainer" aria-label="Wah Chaat account access">
+    <div class="auth-card">
+      <div class="auth-view" id="loginView">
+        <h1>Wah! Chaat</h1>
+        <p class="auth-subtitle">Sign in to your Purchase Inventory Management account.</p>
+        <form class="auth-form" id="loginForm">
+          <div class="field">
+            <label for="loginEmail">Email address</label>
+            <input id="loginEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Enter your password">
+          </div>
+          <button class="btn-primary" id="loginBtn" type="submit">Log In</button>
+        </form>
+        <div class="auth-links">
+          <button class="auth-link" type="button" data-auth-view="forgotView">Forgot password?</button>
+          <button class="auth-link" type="button" data-auth-view="signupView">Create account</button>
+        </div>
+      </div>
+
+      <div class="auth-view" id="signupView" hidden>
+        <h2>Create account</h2>
+        <p class="auth-subtitle">Create an account for Wah! Chaat inventory.</p>
+        <form class="auth-form" id="signupForm">
+          <div class="field">
+            <label for="signupEmail">Email address</label>
+            <input id="signupEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="signupPassword">Password</label>
+            <input id="signupPassword" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters">
+          </div>
+          <div class="field">
+            <label for="signupPasswordConfirm">Confirm password</label>
+            <input id="signupPasswordConfirm" type="password" autocomplete="new-password" minlength="8" required placeholder="Enter password again">
+          </div>
+          <button class="btn-primary" id="signupBtn" type="submit">Create Account</button>
+        </form>
+        <div class="auth-links"><button class="auth-link" type="button" data-auth-view="loginView">Back to login</button></div>
+      </div>
+
+      <div class="auth-view" id="forgotView" hidden>
+        <h2>Reset password</h2>
+        <p class="auth-subtitle">Enter your account email. Supabase will send a password reset link if the account is eligible.</p>
+        <form class="auth-form" id="forgotForm">
+          <div class="field">
+            <label for="forgotEmail">Email address</label>
+            <input id="forgotEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+          </div>
+          <button class="btn-primary" id="forgotBtn" type="submit">Send Reset Link</button>
+        </form>
+        <div class="auth-links"><button class="auth-link" type="button" data-auth-view="loginView">Back to login</button></div>
+      </div>
+
+      <div class="auth-view" id="updatePasswordView" hidden>
+        <h2>Choose a new password</h2>
+        <p class="auth-subtitle">Enter and confirm your new password.</p>
+        <form class="auth-form" id="updatePasswordForm">
+          <div class="field">
+            <label for="newPassword">New password</label>
+            <input id="newPassword" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters">
+          </div>
+          <div class="field">
+            <label for="newPasswordConfirm">Confirm new password</label>
+            <input id="newPasswordConfirm" type="password" autocomplete="new-password" minlength="8" required placeholder="Enter password again">
+          </div>
+          <button class="btn-primary" id="updatePasswordBtn" type="submit">Update Password</button>
+        </form>
+      </div>
+
+      <div id="authMessage" class="auth-message" role="status" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <main class="container" id="appContainer" hidden>
 
     <header class="page-header">
       <div>
         <h1>Wah! Chaat</h1>
         <p>Purchase Inventory Management</p>
       </div>
-      <div class="today-label" id="todayLabel"></div>
+      <div class="auth-userbar">
+        <span class="auth-user-email" id="signedInEmail"></span>
+        <button class="btn-secondary" id="logoutBtn" type="button">Log Out</button>
+        <div class="today-label" id="todayLabel"></div>
+      </div>
     </header>
 
     <div id="notice" class="notice" role="status"></div>
@@ -629,6 +745,47 @@
       : null;
 
     const $ = (id) => document.getElementById(id);
+
+    let activeUserId = null;
+    let authReady = false;
+
+    function showAuthMessage(message, type = "success") {
+      const box = $("authMessage");
+      box.textContent = message;
+      box.className = "auth-message " + type;
+    }
+
+    function clearAuthMessage() {
+      const box = $("authMessage");
+      box.textContent = "";
+      box.className = "auth-message";
+    }
+
+    function setAuthView(viewId, clearMessage = true) {
+      document.querySelectorAll(".auth-view").forEach((view) => {
+        view.hidden = view.id !== viewId;
+      });
+      if (clearMessage) clearAuthMessage();
+    }
+
+    function showSignedInApp(session) {
+      if (!session || !session.user) {
+        activeUserId = null;
+        $("appContainer").hidden = true;
+        $("authContainer").hidden = false;
+        setAuthView("loginView", false);
+        $("signedInEmail").textContent = "";
+        return;
+      }
+
+      $("authContainer").hidden = true;
+      $("appContainer").hidden = false;
+      $("signedInEmail").textContent = session.user.email || "Signed in";
+      if (activeUserId !== session.user.id) {
+        activeUserId = session.user.id;
+        void initializePage();
+      }
+    }
 
     let cart = loadStorage(CART_KEY, []);
     let savedDays = loadStorage(SAVED_KEY, {});
@@ -1105,7 +1262,152 @@
       showNotice("Saved purchases CSV exported.");
     });
 
-    initializePage();
+    // Authentication: inventory operations are available only after sign-in.
+    document.querySelectorAll("[data-auth-view]").forEach((button) => {
+      button.addEventListener("click", () => setAuthView(button.dataset.authView));
+    });
+
+    if (!supabaseClient) {
+      showAuthMessage("Supabase could not load. Check your internet connection and refresh this page.", "error");
+    } else {
+      const currentUrl = window.location.href.split("#")[0];
+
+      $("loginForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearAuthMessage();
+        const button = $("loginBtn");
+        button.disabled = true;
+        button.textContent = "Signing in...";
+        try {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: $("loginEmail").value.trim(),
+            password: $("loginPassword").value
+          });
+          if (error) throw error;
+          showSignedInApp(data.session);
+        } catch (error) {
+          showAuthMessage(error.message || "Unable to sign in.", "error");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Log In";
+        }
+      });
+
+      $("signupForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearAuthMessage();
+        const password = $("signupPassword").value;
+        if (password !== $("signupPasswordConfirm").value) {
+          showAuthMessage("The passwords do not match.", "error");
+          return;
+        }
+        const button = $("signupBtn");
+        button.disabled = true;
+        button.textContent = "Creating account...";
+        try {
+          const { data, error } = await supabaseClient.auth.signUp({
+            email: $("signupEmail").value.trim(),
+            password,
+            options: { emailRedirectTo: currentUrl }
+          });
+          if (error) throw error;
+          if (data.session) {
+            showSignedInApp(data.session);
+          } else {
+            showAuthMessage("Account request submitted. If email confirmation is enabled, open the confirmation link sent to your email, then return to this website to log in.", "success");
+          }
+        } catch (error) {
+          showAuthMessage(error.message || "Unable to create account.", "error");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Create Account";
+        }
+      });
+
+      $("forgotForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearAuthMessage();
+        const button = $("forgotBtn");
+        button.disabled = true;
+        button.textContent = "Sending...";
+        try {
+          const { error } = await supabaseClient.auth.resetPasswordForEmail(
+            $("forgotEmail").value.trim(),
+            { redirectTo: currentUrl }
+          );
+          if (error) throw error;
+          showAuthMessage("If an account exists for that email, a password reset link has been sent. Check your inbox and spam folder.", "success");
+        } catch (error) {
+          showAuthMessage(error.message || "Unable to send the reset link.", "error");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Send Reset Link";
+        }
+      });
+
+      $("updatePasswordForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearAuthMessage();
+        const password = $("newPassword").value;
+        if (password !== $("newPasswordConfirm").value) {
+          showAuthMessage("The passwords do not match.", "error");
+          return;
+        }
+        const button = $("updatePasswordBtn");
+        button.disabled = true;
+        button.textContent = "Updating...";
+        try {
+          const { error } = await supabaseClient.auth.updateUser({ password });
+          if (error) throw error;
+          showAuthMessage("Password updated successfully. You are now signed in.", "success");
+          const { data } = await supabaseClient.auth.getSession();
+          if (data.session) showSignedInApp(data.session);
+        } catch (error) {
+          showAuthMessage(error.message || "Unable to update password. Please open a fresh reset link.", "error");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Update Password";
+        }
+      });
+
+      $("logoutBtn").addEventListener("click", async () => {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) showNotice("Log out failed: " + error.message, "error");
+        else showSignedInApp(null);
+      });
+
+      supabaseClient.auth.onAuthStateChange((event, session) => {
+        // Defer UI work out of the auth callback to avoid blocking Supabase's auth lock.
+        window.setTimeout(() => {
+          if (event === "PASSWORD_RECOVERY") {
+            $("appContainer").hidden = true;
+            $("authContainer").hidden = false;
+            setAuthView("updatePasswordView", false);
+            showAuthMessage("Choose a new password for your account.", "success");
+          } else if (event === "SIGNED_OUT") {
+            showSignedInApp(null);
+          } else if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED")) {
+            showSignedInApp(session);
+          }
+        }, 0);
+      });
+
+      // If the reset link has returned to the app, Supabase emits PASSWORD_RECOVERY.
+      // Also check the URL query as a helpful fallback for reset redirects.
+      if (new URLSearchParams(window.location.search).get("mode") === "reset") {
+        setAuthView("updatePasswordView", false);
+      }
+
+      supabaseClient.auth.getSession().then(({ data, error }) => {
+        if (error) {
+          showAuthMessage("Could not check login session: " + error.message, "error");
+          showSignedInApp(null);
+          return;
+        }
+        authReady = true;
+        showSignedInApp(data.session);
+      });
+    }
   </script>
 </body>
 </html>
