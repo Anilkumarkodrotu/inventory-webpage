@@ -591,17 +591,11 @@
 
             <div class="field full-width">
               <label for="itemName">Item Name</label>
-              <input
-                id="itemName"
-                type="text"
-                list="itemOptions"
-                required
-                autocomplete="off"
-                placeholder="Search or type an item name"
-              >
-              <datalist id="itemOptions"></datalist>
+              <select id="itemName" required>
+                <option value="">Select an item</option>
+              </select>
               <div class="unit-display" id="unitDisplay">
-                Start typing to search existing items, or enter a new item name.
+                Select an item to see its unit.
               </div>
             </div>
 
@@ -619,7 +613,7 @@
 
             <div class="field">
               <label for="unit">Unit</label>
-              <input id="unit" type="text" placeholder="Auto-filled or enter unit" required>
+              <input id="unit" type="text" readonly placeholder="Auto-filled">
             </div>
 
             <div class="field full-width">
@@ -1009,54 +1003,33 @@
     }
 
     function populateItemDropdown() {
-      const options = $("itemOptions");
-      options.innerHTML = "";
+      const select = $("itemName");
 
       itemCatalog.forEach((item) => {
         const option = document.createElement("option");
         option.value = item.name;
-        options.appendChild(option);
+        option.textContent = item.name;
+        select.appendChild(option);
       });
     }
 
-    // Search existing item names or type a new item name.
-    // Known items receive their default unit; custom items can enter their own unit.
-    let lastSelectedCatalogName = "";
-
-    function updateItemSelection() {
-      const itemName = $("itemName").value.trim();
+    // Entry sheet unit selection.
+    $("itemName").addEventListener("change", function () {
       const selectedItem = itemCatalog.find(
-        (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
+        (item) => item.name === this.value
       );
 
-      if (selectedItem) {
-        $("unit").value = selectedItem.unit;
-        $("unit").readOnly = true;
-        $("unitDisplay").textContent = "Default unit: " + selectedItem.unit;
-        lastSelectedCatalogName = selectedItem.name;
-      } else if (itemName) {
-        if (lastSelectedCatalogName) $("unit").value = "";
-        lastSelectedCatalogName = "";
-        $("unit").readOnly = false;
-        $("unitDisplay").textContent = "New item: enter its unit below (for example, Kg, Liters, Packs, or Pcs).";
-      } else {
-        lastSelectedCatalogName = "";
-        $("unit").readOnly = false;
-        $("unit").value = "";
-        $("unitDisplay").textContent = "Start typing to search existing items, or enter a new item name.";
-      }
-    }
-
-    $("itemName").addEventListener("input", updateItemSelection);
-    $("itemName").addEventListener("change", updateItemSelection);
+      $("unit").value = selectedItem ? selectedItem.unit : "";
+      $("unitDisplay").textContent = selectedItem
+        ? "Default unit: " + selectedItem.unit
+        : "Select an item to see its unit.";
+    });
 
     $("purchaseForm").addEventListener("reset", function () {
       window.setTimeout(() => {
         $("unit").value = "";
-        $("unit").readOnly = false;
-        lastSelectedCatalogName = "";
         $("unitDisplay").textContent =
-          "Start typing to search existing items, or enter a new item name.";
+          "Select an item to see its unit.";
       }, 0);
     });
 
@@ -1064,20 +1037,16 @@
     $("purchaseForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
-      const itemName = $("itemName").value.trim();
+      const itemName = $("itemName").value;
       const quantity = Number($("quantity").value);
       const price = Number($("price").value);
-      const unit = $("unit").value.trim();
 
-      if (!itemName) {
-        showNotice("Please select or enter an item name.", "error");
-        $("itemName").focus();
-        return;
-      }
+      const selectedItem = itemCatalog.find(
+        (item) => item.name === itemName
+      );
 
-      if (!unit) {
-        showNotice("Please enter or select a unit for this item.", "error");
-        $("unit").focus();
+      if (!selectedItem) {
+        showNotice("Please select an item.", "error");
         return;
       }
 
@@ -1094,9 +1063,9 @@
       const entry = {
         id: Date.now().toString() + "-" +
             Math.random().toString(36).slice(2, 9),
-        item: itemName,
+        item: selectedItem.name,
         qty: quantity,
-        unit: unit,
+        unit: selectedItem.unit,
         price: price,
         entry_date: localDateString(),
         subitem: ""
