@@ -591,11 +591,17 @@
 
             <div class="field full-width">
               <label for="itemName">Item Name</label>
-              <select id="itemName" required>
-                <option value="">Select an item</option>
-              </select>
+              <input
+                id="itemName"
+                type="text"
+                list="itemOptions"
+                required
+                autocomplete="off"
+                placeholder="Search or type an item name"
+              >
+              <datalist id="itemOptions"></datalist>
               <div class="unit-display" id="unitDisplay">
-                Select an item to see its unit.
+                Start typing to search existing items, or enter a new item name.
               </div>
             </div>
 
@@ -613,7 +619,7 @@
 
             <div class="field">
               <label for="unit">Unit</label>
-              <input id="unit" type="text" readonly placeholder="Auto-filled">
+              <input id="unit" type="text" placeholder="Auto-filled or enter unit" required>
             </div>
 
             <div class="field full-width">
@@ -748,73 +754,20 @@
 
     // Item catalog: edit or add items here.
     const itemCatalog = [
-      { name: "Amchur", unit: "Grams" },
-{ name: "Ajwain", unit: "Grams" },
-{ name: "Atta", unit: "Kg" },
-{ name: "Average electricity bill", unit: "Bill" },
-{ name: "Average gas bill", unit: "Bill" },
-{ name: "Besan", unit: "Kg" },
-{ name: "Beetroot", unit: "Kg" },
-{ name: "Black pepper", unit: "Grams" },
-{ name: "Black salt", unit: "Grams" },
-{ name: "Butter", unit: "Packs" },
-{ name: "Capsicum", unit: "Kg" },
-{ name: "Carrots", unit: "Kg" },
-{ name: "Cauliflower", unit: "Pcs" },
-{ name: "Chat masala", unit: "Grams" },
-{ name: "Cheese cubes", unit: "Packs" },
-{ name: "Chilli powder", unit: "Grams" },
-{ name: "Chole masala", unit: "Grams" },
-{ name: "Corn flour", unit: "Grams" },
-{ name: "Cooking Oil", unit: "Liters" },
-{ name: "Cucumber", unit: "Kg" },
-{ name: "Curd", unit: "Kg" },
-{ name: "Dhania powder", unit: "Grams" },
-{ name: "Floor cleaner", unit: "Bottles" },
-{ name: "Garbage bags", unit: "Packs" },
-{ name: "Garam masala", unit: "Grams" },
-{ name: "Garlic", unit: "Kg" },
-{ name: "Ginger", unit: "Kg" },
-{ name: "Green Chilli", unit: "Kg" },
-{ name: "Handwash", unit: "Bottles" },
-{ name: "HIT", unit: "Bottles" },
-{ name: "Jaggery", unit: "Kg" },
-{ name: "Jaljira", unit: "Grams" },
-{ name: "Jeera", unit: "Grams" },
-{ name: "Jeera powder", unit: "Grams" },
-{ name: "Kachori", unit: "Packs" },
-{ name: "Kashmiri red chilli powder", unit: "Grams" },
-{ name: "Kothmir", unit: "Bunches" },
-{ name: "Lemons", unit: "Pcs" },
-{ name: "Milk", unit: "Liters" },
-{ name: "Mirchi", unit: "Grams" },
-{ name: "Mixture", unit: "Packs" },
-{ name: "Murmura", unit: "Packs" },
-{ name: "Onions", unit: "Kg" },
-{ name: "Oil", unit: "Liters" },
-{ name: "Paper plates", unit: "Packs" },
-{ name: "Paper rolls", unit: "Packs" },
-{ name: "Paneer", unit: "Kg" },
-{ name: "Papdi", unit: "Packs" },
-{ name: "Pani puri", unit: "Packs" },
-{ name: "Pani puri masala", unit: "Grams" },
-{ name: "Pav", unit: "Packs" },
-{ name: "Pav bhaji masala", unit: "Grams" },
-{ name: "Potatoes", unit: "Kg" },
-{ name: "Pudina", unit: "Bunches" },
-{ name: "Rice", unit: "Kg" },
-{ name: "Salt", unit: "Kg" },
-{ name: "Samosa", unit: "Pcs" },
-{ name: "Saunf", unit: "Grams" },
-{ name: "Sev", unit: "Packs" },
-{ name: "Sugar", unit: "Kg" },
-{ name: "Surf", unit: "Kg" },
-{ name: "Tamarind", unit: "Grams" },
-{ name: "Tissues", unit: "Packs" },
-{ name: "Tomatoes", unit: "Kg" },
-{ name: "Vim soaps", unit: "Pcs" },
-{ name: "White peas", unit: "Kg" },
-{ name: "Wooden spoons", unit: "Packs" }
+      { name: "Atta", unit: "Kg" },
+      { name: "Besan", unit: "Kg" },
+      { name: "Butter", unit: "Kg" },
+      { name: "Cooking Oil", unit: "Liters" },
+      { name: "Curd", unit: "Kg" },
+      { name: "Green Chilli", unit: "Kg" },
+      { name: "Milk", unit: "Liters" },
+      { name: "Onions", unit: "Kg" },
+      { name: "Paper Plates", unit: "Pcs" },
+      { name: "Pani Puri", unit: "Packs" },
+      { name: "Potatoes", unit: "Kg" },
+      { name: "Rice", unit: "Kg" },
+      { name: "Salt", unit: "Kg" },
+      { name: "Tomatoes", unit: "Kg" }
     ];
 
     itemCatalog.sort((a, b) => a.name.localeCompare(b.name));
@@ -1003,33 +956,54 @@
     }
 
     function populateItemDropdown() {
-      const select = $("itemName");
+      const options = $("itemOptions");
+      options.innerHTML = "";
 
       itemCatalog.forEach((item) => {
         const option = document.createElement("option");
         option.value = item.name;
-        option.textContent = item.name;
-        select.appendChild(option);
+        options.appendChild(option);
       });
     }
 
-    // Entry sheet unit selection.
-    $("itemName").addEventListener("change", function () {
+    // Search existing item names or type a new item name.
+    // Known items receive their default unit; custom items can enter their own unit.
+    let lastSelectedCatalogName = "";
+
+    function updateItemSelection() {
+      const itemName = $("itemName").value.trim();
       const selectedItem = itemCatalog.find(
-        (item) => item.name === this.value
+        (item) => item.name.toLocaleLowerCase() === itemName.toLocaleLowerCase()
       );
 
-      $("unit").value = selectedItem ? selectedItem.unit : "";
-      $("unitDisplay").textContent = selectedItem
-        ? "Default unit: " + selectedItem.unit
-        : "Select an item to see its unit.";
-    });
+      if (selectedItem) {
+        $("unit").value = selectedItem.unit;
+        $("unit").readOnly = true;
+        $("unitDisplay").textContent = "Default unit: " + selectedItem.unit;
+        lastSelectedCatalogName = selectedItem.name;
+      } else if (itemName) {
+        if (lastSelectedCatalogName) $("unit").value = "";
+        lastSelectedCatalogName = "";
+        $("unit").readOnly = false;
+        $("unitDisplay").textContent = "New item: enter its unit below (for example, Kg, Liters, Packs, or Pcs).";
+      } else {
+        lastSelectedCatalogName = "";
+        $("unit").readOnly = false;
+        $("unit").value = "";
+        $("unitDisplay").textContent = "Start typing to search existing items, or enter a new item name.";
+      }
+    }
+
+    $("itemName").addEventListener("input", updateItemSelection);
+    $("itemName").addEventListener("change", updateItemSelection);
 
     $("purchaseForm").addEventListener("reset", function () {
       window.setTimeout(() => {
         $("unit").value = "";
+        $("unit").readOnly = false;
+        lastSelectedCatalogName = "";
         $("unitDisplay").textContent =
-          "Select an item to see its unit.";
+          "Start typing to search existing items, or enter a new item name.";
       }, 0);
     });
 
@@ -1037,16 +1011,20 @@
     $("purchaseForm").addEventListener("submit", function (event) {
       event.preventDefault();
 
-      const itemName = $("itemName").value;
+      const itemName = $("itemName").value.trim();
       const quantity = Number($("quantity").value);
       const price = Number($("price").value);
+      const unit = $("unit").value.trim();
 
-      const selectedItem = itemCatalog.find(
-        (item) => item.name === itemName
-      );
+      if (!itemName) {
+        showNotice("Please select or enter an item name.", "error");
+        $("itemName").focus();
+        return;
+      }
 
-      if (!selectedItem) {
-        showNotice("Please select an item.", "error");
+      if (!unit) {
+        showNotice("Please enter or select a unit for this item.", "error");
+        $("unit").focus();
         return;
       }
 
@@ -1063,9 +1041,9 @@
       const entry = {
         id: Date.now().toString() + "-" +
             Math.random().toString(36).slice(2, 9),
-        item: selectedItem.name,
+        item: itemName,
         qty: quantity,
-        unit: selectedItem.unit,
+        unit: unit,
         price: price,
         entry_date: localDateString(),
         subitem: ""
