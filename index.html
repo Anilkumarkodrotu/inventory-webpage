@@ -444,6 +444,69 @@
     }
 
 
+
+    /* Analytics section: additive only; existing purchase workflow remains unchanged. */
+    .analytics-section { margin-top: 24px; }
+    .analytics-filters {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      align-items: end;
+    }
+    .analytics-actions, .analytics-view-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .analytics-results { margin-top: 22px; }
+    .analytics-summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .analytics-stat {
+      padding: 16px;
+      background: var(--yellow-light);
+      border: 1px solid #f1df91;
+      border-radius: 9px;
+    }
+    .analytics-stat span { display: block; color: var(--grey); font-size: 12px; margin-bottom: 7px; }
+    .analytics-stat strong { font-size: 21px; }
+    .analytics-table-wrap { width: 100%; overflow: auto; max-height: 440px; }
+    .analytics-table { min-width: 580px; }
+    .analytics-table th {
+      position: sticky; top: 0; z-index: 1;
+      padding: 12px 10px; background: #faf7e9;
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    .analytics-table td {
+      padding: 11px 10px; border-bottom: 1px solid #eee; overflow-wrap: anywhere;
+    }
+    .analytics-chart { margin-top: 18px; padding: 18px; border: 1px solid var(--border); border-radius: 10px; background: #fff; }
+    .analytics-chart h3 { margin: 0 0 16px; font-size: 16px; }
+    .analytics-bars { display: flex; align-items: stretch; gap: 10px; min-height: 230px; overflow-x: auto; padding: 10px 4px 4px; }
+    .analytics-bar-item { min-width: 54px; flex: 1 0 54px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 7px; }
+    .analytics-bar-value { font-size: 11px; color: var(--grey); text-align: center; overflow-wrap: anywhere; }
+    .analytics-bar { width: min(38px, 75%); min-height: 3px; background: var(--yellow); border: 1px solid #e2b900; border-radius: 5px 5px 0 0; }
+    .analytics-bar-label { font-size: 11px; color: var(--grey); text-align: center; white-space: nowrap; }
+    .analytics-pie-layout { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 24px; }
+    .analytics-pie {
+      width: 220px; height: 220px; max-width: 100%; border-radius: 50%;
+      background: conic-gradient(#ffd43b 0% 100%);
+      border: 1px solid #e5e5e5; flex: 0 0 auto;
+    }
+    .analytics-legend { display: grid; gap: 9px; min-width: 180px; max-width: 100%; }
+    .analytics-legend-item { display: flex; align-items: center; gap: 8px; overflow-wrap: anywhere; font-size: 13px; }
+    .analytics-legend-swatch { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 12px; }
+    .analytics-muted { color: var(--grey); font-size: 12px; line-height: 1.5; }
+    @media (max-width: 700px) {
+      .analytics-filters { grid-template-columns: minmax(0, 1fr); }
+      .analytics-summary { grid-template-columns: minmax(0, 1fr); }
+      .analytics-actions button, .analytics-view-actions button { width: 100%; }
+    }
+
     /* Supabase authentication screens */
     .auth-shell {
       max-width: 460px;
@@ -740,6 +803,92 @@
       </p>
     </section>
 
+
+    <!-- ANALYTICS: separate read-only reporting section; existing purchase screens remain unchanged. -->
+    <section class="panel analytics-section" id="analyticsSection">
+      <div class="panel-heading">
+        <h2>4. Analytics</h2>
+        <span class="section-tag">Purchase Reports</span>
+      </div>
+
+      <div class="analytics-filters">
+        <div class="field">
+          <label for="analyticsItem">Item</label>
+          <select id="analyticsItem">
+            <option value="__ALL__">All items</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="analyticsFrom">Date From</label>
+          <input id="analyticsFrom" type="date" required>
+        </div>
+        <div class="field">
+          <label for="analyticsTo">Date To</label>
+          <input id="analyticsTo" type="date" required>
+        </div>
+      </div>
+
+      <div class="analytics-actions">
+        <button class="btn-primary" id="runAnalyticsBtn" type="button">Generate Report</button>
+        <button class="btn-secondary" id="exportAnalyticsBtn" type="button" disabled>Export CSV</button>
+      </div>
+      <p class="footer-note">Choose an item and date range. The report shows saved purchases from Supabase only. Amounts are the actual prices entered for each record; quantity is not multiplied by price.</p>
+
+      <div id="analyticsNotice" class="notice" role="status" aria-live="polite"></div>
+      <div class="analytics-results" id="analyticsResults" hidden>
+        <div class="analytics-summary">
+          <div class="analytics-stat">
+            <span>Matching Records</span>
+            <strong id="analyticsRecordCount">0</strong>
+          </div>
+          <div class="analytics-stat">
+            <span>Total Purchase Amount</span>
+            <strong id="analyticsTotalAmount">₹0.00</strong>
+          </div>
+        </div>
+
+        <div class="panel-heading">
+          <h2 style="font-size:16px">Report Output</h2>
+          <span class="analytics-muted" id="analyticsRangeLabel"></span>
+        </div>
+
+        <div class="analytics-view-actions" aria-label="Report display format">
+          <button class="btn-secondary" type="button" data-analytics-view="table">Table</button>
+          <button class="btn-secondary" type="button" data-analytics-view="bar">Bar Chart</button>
+          <button class="btn-secondary" type="button" data-analytics-view="pie">Pie Chart</button>
+        </div>
+
+        <div id="analyticsTableView">
+          <div class="analytics-table-wrap">
+            <table class="analytics-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Item Name</th>
+                  <th class="number">Quantity</th>
+                  <th>Unit</th>
+                  <th class="number">Price (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="analyticsBody"></tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="analyticsEmpty" hidden>No records found for the selected item and date range.</div>
+        </div>
+        <div class="analytics-chart" id="analyticsBarView" hidden>
+          <h3>Purchase Amount by Date</h3>
+          <div class="analytics-bars" id="analyticsBars"></div>
+        </div>
+        <div class="analytics-chart" id="analyticsPieView" hidden>
+          <h3>Purchase Amount Share by Item</h3>
+          <div class="analytics-pie-layout">
+            <div class="analytics-pie" id="analyticsPie" role="img" aria-label="Purchase amount share by item"></div>
+            <div class="analytics-legend" id="analyticsPieLegend"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -969,6 +1118,7 @@
         });
 
       populateItemDropdown();
+      populateAnalyticsItems();
       renderCart();
       await loadSavedPurchasesFromSupabase();
       refreshSavedDateDropdown();
@@ -1019,6 +1169,262 @@
         select.appendChild(option);
       });
     }
+
+
+    // Analytics is additive and read-only. It does not change purchase entry/save logic.
+    let analyticsRows = [];
+    let analyticsReportFrom = "";
+    let analyticsReportTo = "";
+    let analyticsReportItem = "__ALL__";
+
+    function setAnalyticsNotice(message, type = "success") {
+      const box = $("analyticsNotice");
+      box.textContent = message;
+      box.className = "notice " + type;
+    }
+
+    function populateAnalyticsItems() {
+      const select = $("analyticsItem");
+      select.innerHTML = '<option value="__ALL__">All items</option>';
+      itemCatalog.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.name;
+        option.textContent = item.name;
+        select.appendChild(option);
+      });
+    }
+
+    function formatAnalyticsDate(dateString) {
+      return formatDate(String(dateString || "").slice(0, 10));
+    }
+
+    async function fetchAnalyticsRows(fromDate, toDate, itemName) {
+      const pageSize = 1000;
+      let offset = 0;
+      const rows = [];
+
+      while (true) {
+        let query = supabaseClient
+          .from("tbwcinv")
+          .select("entry_date, item_name, qty, units, price, is_deleted")
+          .eq("is_deleted", false)
+          .gte("entry_date", fromDate)
+          .lte("entry_date", toDate)
+          .order("entry_date", { ascending: true })
+          .order("item_name", { ascending: true })
+          .range(offset, offset + pageSize - 1);
+
+        if (itemName && itemName !== "__ALL__") {
+          query = query.eq("item_name", itemName);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const page = data || [];
+        rows.push(...page);
+        if (page.length < pageSize) break;
+        offset += pageSize;
+      }
+
+      return rows.map((row) => ({
+        date: String(row.entry_date || "").slice(0, 10),
+        item: String(row.item_name || ""),
+        qty: Number(row.qty || 0),
+        unit: String(row.units || ""),
+        price: Number(row.price || 0)
+      }));
+    }
+
+    function setAnalyticsView(view) {
+      $("analyticsTableView").hidden = view !== "table";
+      $("analyticsBarView").hidden = view !== "bar";
+      $("analyticsPieView").hidden = view !== "pie";
+    }
+
+    function renderAnalyticsTable() {
+      const body = $("analyticsBody");
+      body.innerHTML = "";
+      analyticsRows.forEach((entry) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${escapeHtml(formatAnalyticsDate(entry.date))}</td>
+          <td>${escapeHtml(entry.item)}</td>
+          <td class="number">${escapeHtml(entry.qty)}</td>
+          <td>${escapeHtml(entry.unit)}</td>
+          <td class="number">${money(entry.price)}</td>`;
+        body.appendChild(row);
+      });
+      $("analyticsEmpty").hidden = analyticsRows.length > 0;
+      $("analyticsTableView").querySelector(".analytics-table-wrap").style.display =
+        analyticsRows.length ? "block" : "none";
+    }
+
+    function renderAnalyticsBarChart() {
+      const totals = {};
+      analyticsRows.forEach((entry) => {
+        totals[entry.date] = (totals[entry.date] || 0) + entry.price;
+      });
+      const items = Object.entries(totals).sort((a, b) => a[0].localeCompare(b[0]));
+      const host = $("analyticsBars");
+      host.innerHTML = "";
+
+      if (!items.length) {
+        host.innerHTML = '<p class="analytics-muted">No data available for the selected filters.</p>';
+        return;
+      }
+
+      const maxValue = Math.max(...items.map(([, value]) => value), 1);
+      items.forEach(([date, amount]) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "analytics-bar-item";
+        const value = document.createElement("div");
+        value.className = "analytics-bar-value";
+        value.textContent = money(amount);
+        const bar = document.createElement("div");
+        bar.className = "analytics-bar";
+        bar.style.height = Math.max(3, (amount / maxValue) * 155) + "px";
+        bar.title = formatAnalyticsDate(date) + ": " + money(amount);
+        const label = document.createElement("div");
+        label.className = "analytics-bar-label";
+        label.textContent = date.slice(5);
+        label.title = formatAnalyticsDate(date);
+        wrapper.append(value, bar, label);
+        host.appendChild(wrapper);
+      });
+    }
+
+    function renderAnalyticsPieChart() {
+      const totals = {};
+      analyticsRows.forEach((entry) => {
+        totals[entry.item] = (totals[entry.item] || 0) + entry.price;
+      });
+      const items = Object.entries(totals)
+        .sort((a, b) => b[1] - a[1])
+        .filter(([, amount]) => amount > 0);
+      const pie = $("analyticsPie");
+      const legend = $("analyticsPieLegend");
+      legend.innerHTML = "";
+
+      if (!items.length) {
+        pie.style.background = "#eeeeee";
+        pie.setAttribute("aria-label", "No purchase amount data");
+        legend.textContent = "No positive purchase amounts available for a pie chart.";
+        return;
+      }
+
+      const palette = ["#ffd43b", "#171717", "#70a1ff", "#ff8b7b", "#72c49a", "#b39ddb", "#ffb86b", "#7bc8d6", "#d6a2e8", "#a7c957"];
+      const grandTotal = items.reduce((sum, [, amount]) => sum + amount, 0);
+      let current = 0;
+      const slices = [];
+      items.forEach(([name, amount], index) => {
+        const start = current;
+        current += (amount / grandTotal) * 100;
+        slices.push(`${palette[index % palette.length]} ${start}% ${current}%`);
+
+        const legendItem = document.createElement("div");
+        legendItem.className = "analytics-legend-item";
+        const swatch = document.createElement("span");
+        swatch.className = "analytics-legend-swatch";
+        swatch.style.background = palette[index % palette.length];
+        const label = document.createElement("span");
+        label.textContent = `${name}: ${money(amount)} (${((amount / grandTotal) * 100).toFixed(1)}%)`;
+        legendItem.append(swatch, label);
+        legend.appendChild(legendItem);
+      });
+      pie.style.background = "conic-gradient(" + slices.join(", ") + ")";
+      pie.setAttribute("aria-label", "Purchase amount share by item");
+    }
+
+    async function runAnalyticsReport() {
+      const fromDate = $("analyticsFrom").value;
+      const toDate = $("analyticsTo").value;
+      const itemName = $("analyticsItem").value;
+
+      if (!fromDate || !toDate) {
+        setAnalyticsNotice("Please select both From and To dates.", "error");
+        return;
+      }
+      if (fromDate > toDate) {
+        setAnalyticsNotice("The From date cannot be later than the To date.", "error");
+        return;
+      }
+      if (!supabaseClient) {
+        setAnalyticsNotice("Supabase did not load. Refresh the page and try again.", "error");
+        return;
+      }
+
+      const button = $("runAnalyticsBtn");
+      button.disabled = true;
+      button.textContent = "Loading report...";
+      $("exportAnalyticsBtn").disabled = true;
+
+      try {
+        analyticsRows = await fetchAnalyticsRows(fromDate, toDate, itemName);
+        analyticsReportFrom = fromDate;
+        analyticsReportTo = toDate;
+        analyticsReportItem = itemName;
+        analyticsRows.sort((a, b) => a.date.localeCompare(b.date) || a.item.localeCompare(b.item));
+
+        $("analyticsRecordCount").textContent = analyticsRows.length.toLocaleString("en-IN");
+        const total = analyticsRows.reduce((sum, entry) => sum + entry.price, 0);
+        $("analyticsTotalAmount").textContent = money(total);
+        $("analyticsRangeLabel").textContent =
+          formatAnalyticsDate(fromDate) + " – " + formatAnalyticsDate(toDate) +
+          (itemName === "__ALL__" ? " · All items" : " · " + itemName);
+
+        renderAnalyticsTable();
+        renderAnalyticsBarChart();
+        renderAnalyticsPieChart();
+        $("analyticsResults").hidden = false;
+        $("exportAnalyticsBtn").disabled = analyticsRows.length === 0;
+        setAnalyticsView("table");
+        setAnalyticsNotice(
+          analyticsRows.length
+            ? "Report generated successfully. Choose Table, Bar Chart, or Pie Chart to change the output view."
+            : "No saved purchases found for the selected item and date range.",
+          analyticsRows.length ? "success" : "error"
+        );
+      } catch (error) {
+        console.error("Analytics report failed:", error);
+        setAnalyticsNotice("Could not generate report: " + (error.message || String(error)), "error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Generate Report";
+      }
+    }
+
+    $("runAnalyticsBtn").addEventListener("click", runAnalyticsReport);
+    document.querySelectorAll("[data-analytics-view]").forEach((button) => {
+      button.addEventListener("click", () => setAnalyticsView(button.dataset.analyticsView));
+    });
+
+    $("exportAnalyticsBtn").addEventListener("click", () => {
+      if (!analyticsRows.length) {
+        setAnalyticsNotice("Generate a report with records before exporting.", "error");
+        return;
+      }
+      const rows = [["Date", "Item Name", "Quantity", "Unit", "Price (INR)"]];
+      analyticsRows.forEach((entry) => rows.push([
+        entry.date, entry.item, entry.qty, entry.unit, Number(entry.price).toFixed(2)
+      ]));
+      const csv = rows.map((row) => row.map((value) => {
+        const valueText = String(value ?? "");
+        return '"' + valueText.replace(/"/g, '""') + '"';
+      }).join(",")).join("\r\n");
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const itemSuffix = analyticsReportItem === "__ALL__" ? "All_Items" : analyticsReportItem.replace(/[^a-z0-9_-]+/gi, "_");
+      link.download = "Wah_Chaat_Analytics_" + analyticsReportFrom + "_to_" + analyticsReportTo + "_" + itemSuffix + ".csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setAnalyticsNotice("Analytics CSV exported successfully.");
+    });
+
 
     // Entry sheet unit selection.
     $("itemName").addEventListener("change", function () {
